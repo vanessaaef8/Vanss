@@ -3,9 +3,6 @@ import streamlit as st
 #Foto
 st.image("Vanessa.JPG", width=160)
 
-# Configuración de la página
-st.set_page_config(page_title="Currículum Vitae", layout="wide")
-
 # Título
 st.title("Vanessa Espinosa Fuentes")
 
