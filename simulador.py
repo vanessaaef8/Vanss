@@ -3,11 +3,12 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import yfinance as yf
+
 # Cambiar el fondo a una imagen y el color del texto
 st.markdown(
     """
     <style>
-    .reportview-container {
+    .appview-container {
         background-image: url('https://blog.monex.com.mx/hs-fs/hubfs/C-3.jpg?width=900&height=599&name=C-3.jpg'); /* Cambia la URL por la de tu imagen */
         background-size: cover; /* Asegura que la imagen cubra todo el fondo */
         color: white; /* Color del texto */
