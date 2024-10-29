@@ -23,7 +23,6 @@ edad = st.number_input("Edad", min_value=18, max_value=150, step=1)
 if not isinstance(edad, (int, float)):
     st.error("Por favor, ingresa un valor numérico para la edad.")
     st.stop()
-edad_proyecto = st.number_input("Edad a proyectar", min_value=edad, max_value=150, step=1)
 
 # Validación de la edad a proyectar
 edad_maxima = 150
