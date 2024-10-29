@@ -253,26 +253,27 @@ precios_historicos = precios_historicos_todos.get(ticker)
 precio_actual = obtener_precio_actual(ticker)
 
 # Calcular el rendimiento logarítmico anualizado
-    if precios_historicos is not None and not precios_historicos.empty:
-        rendimiento_log_geom = rendimiento_logaritmico(precios_historicos)
-        riesgo_promedio = calcular_riesgo_promedio(precios_historicos)
-        ratio_riesgo_rendimiento = calcular_ratio_riesgo_rendimiento(rendimiento_log_geom, riesgo_promedio)
-# Calcular rendimiento y riesgo para diferentes periodos
-        periodos = ['1m', '3m', '6m', '1y', 'YTD', '3y', '5y', '10y']
-        rendimientos = {}
-        riesgos = {}
-        
-        for periodo in periodos:
-            rendimiento, riesgo = rendimiento_y_riesgo_por_periodo(precios_historicos, periodo)
-            rendimientos[periodo] = rendimiento
-            riesgos[periodo] = riesgo
+# Calcular el rendimiento logarítmico anualizado
+if precios_historicos is not None and not precios_historicos.empty:
+    rendimiento_log_geom = rendimiento_logaritmico(precios_historicos)
+    riesgo_promedio = calcular_riesgo_promedio(precios_historicos)
+    ratio_riesgo_rendimiento = calcular_ratio_riesgo_rendimiento(rendimiento_log_geom, riesgo_promedio)
 
-    else:
-        rendimiento_log_geom = None
-        riesgo_promedio = None
-        ratio_riesgo_rendimiento = None
-        rendimientos = {periodo: None for periodo in periodos}
-        riesgos = {periodo: None for periodo in periodos}
+    # Calcular rendimiento y riesgo para diferentes periodos
+    periodos = ['1m', '3m', '6m', '1y', 'YTD', '3y', '5y', '10y']
+    rendimientos = {}
+    riesgos = {}
+    
+    for periodo in periodos:
+        rendimiento, riesgo = rendimiento_y_riesgo_por_periodo(precios_historicos, periodo)
+        rendimientos[periodo] = rendimiento
+        riesgos[periodo] = riesgo
+else:
+    rendimiento_log_geom = None
+    riesgo_promedio = None
+    ratio_riesgo_rendimiento = None
+    rendimientos = {periodo: None for periodo in periodos}
+    riesgos = {periodo: None for periodo in periodos}
     
 # Añadir la información a la lista de ETFs
     ETFs_Data.append({
