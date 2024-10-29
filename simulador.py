@@ -9,20 +9,20 @@ from datetime import datetime, timedelta
 st.markdown(
     """
     <style>
-    .appview-container, .main {
-        background-image: url('https://blog.monex.com.mx/hs-fs/hubfs/C-3.jpg?width=900&height=599&name=C-3.jpg'); /* Cambia la URL por la de tu imagen */
-        background-size: cover; /* Asegura que la imagen cubra todo el fondo */
-        color: white; /* Color del texto */
+    /* Cambiar el fondo a una imagen y el color del texto */
+    .reportview-container {
+        background-image: url('https://blog.monex.com.mx/hs-fs/hubfs/C-3.jpg?width=900&height=599&name=C-3.jpg');
+        background-size: cover;
+        color: white;
     }
     .sidebar .sidebar-content {
-        background-color: rgba(0, 0, 0, 0.8); /* Fondo oscuro y semitransparente para la barra lateral */
-        color: white; /* Color del texto de la barra lateral */
+        background-color: rgba(0, 0, 0, 0.8);
+        color: white;
     }
     .stButton>button {
-        color: black; /* Color del texto del botón */
-        background-color: white; /* Fondo del botón */
+        color: black;
+        background-color: white;
     }
-
     /* Cambiar el color de texto en la caja de selección */
     .stSelectbox, .stSelectbox label, .stSelectbox div {
         color: black !important;  /* Cambiar el color del texto a negro */
