@@ -9,8 +9,7 @@ st.markdown(
     """
     <style>
     .reportview-container {
-        background-image: url('https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.allianz.com.mx%2Fseguros%2Fahorro-e-inversion%2Fseguros-inversion.html&psig=AOvVaw3s1q_dnih-u_S2ORpD3cJJ&ust=1730321277064000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCJCFyqG7tIkDFQAAAAAdAAAAABAE
-'); /* Cambia la URL por la de tu imagen */
+        background-image: url('https://blog.monex.com.mx/hs-fs/hubfs/C-3.jpg?width=900&height=599&name=C-3.jpg'); /* Cambia la URL por la de tu imagen */
         background-size: cover; /* Asegura que la imagen cubra todo el fondo */
         color: white; /* Color del texto */
     }
