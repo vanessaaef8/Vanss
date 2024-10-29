@@ -3,6 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import yfinance as yf
+from datetime import datetime, timedelta
 
 # Cambiar el fondo a una imagen y el color del texto
 st.markdown(
@@ -21,8 +22,10 @@ st.markdown(
         color: black; /* Color del texto del botón */
         background-color: white; /* Fondo del botón */
     }
-    h1, h2, h3, h4, h5, h6, p, div, label {
-        color: white !important; /* Cambia el color del texto en encabezados y párrafos a blanco */
+
+    /* Cambiar el color de texto en la caja de selección */
+    .stSelectbox, .stSelectbox label, .stSelectbox div {
+        color: black !important;  /* Cambiar el color del texto a negro */
     }
     </style>
     """,
@@ -118,10 +121,11 @@ etf_tickers = [
     "AGG"
 ]
 
-for ticker in etf_tickers:
-    data = yf.download(ticker, start="2013-12-31", end="2023-12-31")
-    data.to_csv(f"{ticker}.csv")
-
+def obtener_fechas_ultimos_diez_anos():
+    fecha_fin = datetime.now()
+    fecha_inicio = fecha_fin - timedelta(days=10*365)  # Aproximadamente 10 años atrás
+    return fecha_inicio.strftime('%Y-%m-%d'), fecha_fin.strftime('%Y-%m-%d')
+    
 def descargar_datos_historicos(etf_tickers):
     """Descarga los precios históricos de los últimos 10 años para una lista de tickers."""
     fecha_inicio, fecha_fin = obtener_fechas_ultimos_diez_anos()
