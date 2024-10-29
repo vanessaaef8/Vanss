@@ -3,11 +3,6 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import yfinance as yf
-from datetime import datetime, timedelta
-from googletrans import Translator
-
-translator = Translator()
-
 # Cambiar el fondo a una imagen y el color del texto
 st.markdown(
     """
@@ -94,6 +89,9 @@ etf_nombres = [
     "AZ MSCI AUSTRALIA INDEX",
     "AZ BARCLAYS AGGREGATE"
 ]
+
+# Selección del portafolio por el usuario
+portafolio_seleccionado = st.selectbox("Selecciona un portafolio", etf_nombres)
 
 # Tickers correspondientes a los ETFs
 etf_tickers = [
@@ -242,19 +240,24 @@ precios_historicos_todos = descargar_datos_historicos(etf_tickers)
 for nombre, ticker in zip(etf_nombres, etf_tickers):
     nombre_corto, descripcion_larga = obtener_data(ticker)
     
-    # Obtener los precios históricos del ticker actual
-    precios_historicos = precios_historicos_todos.get(ticker)
-    
-    # Obtener el precio actual
-    precio_actual = obtener_precio_actual(ticker)
+# Diccionario con el rendimiento anual de cada portafolio
+rendimiento_anual = {etf_nombres[i]: ETFs_Data[i]["rendimiento_log_geom"] for i in range(len(etf_nombres))}
 
-    # Calcular el rendimiento logarítmico anualizado
+# Obtiene la tasa de rendimiento del portafolio seleccionado
+tasa_rendimiento = rendimiento_anual.get(portafolio_seleccionado, 0)
+
+# Obtener los precios históricos del ticker actual
+precios_historicos = precios_historicos_todos.get(ticker)
+    
+# Obtener el precio actual
+precio_actual = obtener_precio_actual(ticker)
+
+# Calcular el rendimiento logarítmico anualizado
     if precios_historicos is not None and not precios_historicos.empty:
         rendimiento_log_geom = rendimiento_logaritmico(precios_historicos)
         riesgo_promedio = calcular_riesgo_promedio(precios_historicos)
         ratio_riesgo_rendimiento = calcular_ratio_riesgo_rendimiento(rendimiento_log_geom, riesgo_promedio)
-
-        # Calcular rendimiento y riesgo para diferentes periodos
+# Calcular rendimiento y riesgo para diferentes periodos
         periodos = ['1m', '3m', '6m', '1y', 'YTD', '3y', '5y', '10y']
         rendimientos = {}
         riesgos = {}
@@ -271,7 +274,7 @@ for nombre, ticker in zip(etf_nombres, etf_tickers):
         rendimientos = {periodo: None for periodo in periodos}
         riesgos = {periodo: None for periodo in periodos}
     
-    # Añadir la información a la lista de ETFs
+# Añadir la información a la lista de ETFs
     ETFs_Data.append({
         "nombre": nombre,
         "simbolo": ticker,
