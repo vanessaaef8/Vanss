@@ -112,11 +112,30 @@ etf_tickers = [
     "AGG"
 ]
 
-# Seleccionar un ETF
-selected_etf = st.selectbox("Selecciona un ETF", etf_nombres)
+# Selector para que el usuario elija el ETF
+etf_seleccionado = st.selectbox("Selecciona un ETF para ver los precios históricos", etf_tickers)
+etf_nombre_seleccionado = etf_nombres[etf_tickers.index(etf_seleccionado)]
 
-# Obtener el ticker del ETF seleccionado
-selected_ticker = etf_tickers[etf_nombres.index(selected_etf)]
+# Función para descargar precios históricos
+def obtener_precios_historicos(ticker):
+    """Descarga los precios históricos de los últimos 5 años para un ETF dado."""
+    datos = yf.Ticker(ticker).history(period="5y")  # Cambia el periodo según sea necesario
+    return datos["Close"]  # Solo obtener el precio de cierre
+
+# Obtener precios históricos del ETF seleccionado
+precios_historicos = obtener_precios_historicos(etf_seleccionado)
+
+# Generar la gráfica
+st.subheader(f"Precios Históricos del ETF: {etf_nombre_seleccionado}")
+fig, ax = plt.subplots(figsize=(10, 6))
+ax.plot(precios_historicos.index, precios_historicos.values, color='blue', linewidth=2)
+ax.set_title(f"Precio Histórico de {etf_nombre_seleccionado}")
+ax.set_xlabel("Fecha")
+ax.set_ylabel("Precio de Cierre ($)")
+ax.grid(True)
+
+# Mostrar la gráfica en Streamlit
+st.pyplot(fig)
 
 # Funciones para obtener datos y calcular rendimiento/riesgo...
 
@@ -157,30 +176,6 @@ for i in range(anos_proyeccion + 1):
 # Mostrar resultados en tabla
 df_resultado = pd.DataFrame({"Año": list(range(anos_proyeccion + 1)), "Valor proyectado": valor_proyectado})
 st.write(df_resultado)
-
-# Después de calcular los resultados...
-
-# Suponiendo que df_resultado ya está definido
-st.subheader("Gráfica de Rendimiento Proyectado")
-
-# Crear la gráfica
-plt.style.use('ggplot')  # Cambia a un estilo más básico
-fig, ax = plt.subplots(figsize=(10, 6))
-
-# Graficar los datos
-ax.plot(df_resultado["Año"], df_resultado["Valor proyectado"], 
-        marker='o', color='royalblue', linewidth=2, markersize=8, label='Valor Proyectado')
-
-# Etiquetas y título
-ax.set_xlabel("Año", fontsize=14)
-ax.set_ylabel("Valor Proyectado ($)", fontsize=14)
-ax.set_title(f"Proyección del Portafolio seleccionado: {ticker}", fontsize=16)
-ax.legend()
-ax.grid(True)
-ax.tick_params(axis='both', which='major', labelsize=12)
-
-# Mostrar la gráfica en Streamlit
-st.pyplot(fig)
 
 # Mensaje final personalizado
 valor_proyectado = [10000, 12000, 15000]  # Asegúrate de que esta variable esté definida correctamente
