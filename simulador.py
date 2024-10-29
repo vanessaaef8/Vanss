@@ -69,9 +69,9 @@ def validar_aportacion_inicial(aportacion_inicial):
     st.stop()
     
 if aportacion_inicial <= 0:
-        st.error("La aportación inicial debe ser un valor positivo.")
-    return False
-return True
+    st.error("La aportación inicial debe ser un valor positivo.")
+return False
+    return True
 
 # Lista de nombres de ETFs y sus símbolos
 etf_nombres = [
