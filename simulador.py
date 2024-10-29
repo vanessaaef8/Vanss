@@ -1,59 +1,76 @@
 import streamlit as st
 import pandas as pd
+import matplotlib.pyplot as plt
 
-# Título de la App
+# Título de la app
 st.title("Simulador OptiMaxx Patrimonial - Allianz")
 
-# Sección de Datos del Cliente
+# Datos del cliente
 st.header("Datos del Cliente")
-nombre = st.text_input("Nombre Completo")
-edad = st.number_input("Edad", min_value=0, max_value=100, step=1)
-edad_proyectar = st.number_input("Edad a Proyectar", min_value=0, max_value=100, step=1)
+nombre = st.text_input("Nombre completo")
+edad = st.number_input("Edad", min_value=18, max_value=100, step=1)
+edad_proyecto = st.number_input("Edad a proyectar", min_value=edad, max_value=100, step=1)
 
-# Sección de Datos de la Póliza
-st.header("Datos de la Póliza")
-aportacion = st.number_input("Aportación Inicial ($)", min_value=0.0, step=1000.0)
+# Datos de inversión inicial
+st.header("Inversión Inicial")
+aportacion_inicial = st.number_input("Aportación inicial", min_value=1000.0, step=100.0)
 
-# Sección de Aportaciones Subsecuentes
-st.subheader("Aportaciones Subsecuentes")
-num_aportaciones = st.number_input("Número de aportaciones", min_value=1, max_value=10, step=1)
-aportaciones = []
+# Selección de Portafolio Allianz
+st.header("Selección de Portafolio Allianz")
+portafolios = [
+    "Allianz ETF Conservador Pesos",
+    "Allianz ETF Conservador Dólares",
+    "Allianz ETF Conservador Euros",
+    "Allianz ETF Balanceado Pesos",
+    "Allianz ETF Balanceado Dólares",
+    "Allianz ETF Balanceado Euros",
+    "Allianz ETF Dinámico Pesos",
+    "Allianz ETF Dinámico Dólares",
+    "Allianz ETF Dinámico Euros",
+    "Allianz ETF Real Pesos",
+    "Allianz Global"
+]
+portafolio_seleccionado = st.selectbox("Selecciona el portafolio recomendado", portafolios)
 
-for i in range(num_aportaciones):
-    st.write(f"Aportación {i+1}")
-    monto = st.number_input(f"Monto {i+1} ($)", min_value=0.0, step=1000.0, key=f"monto_{i}")
-    año = st.selectbox(f"Año {i+1}", list(range(2024, 2035)), key=f"año_{i}")
-    aportaciones.append({"Monto": monto, "Año": año})
+# Número de años para proyectar
+anos_proyeccion = st.slider("Años de proyección", min_value=1, max_value=30, step=1)
 
-# Conversión a DataFrame para visualización
-df_aportaciones = pd.DataFrame(aportaciones)
-if not df_aportaciones.empty:
-    st.write("Resumen de Aportaciones:")
-    st.dataframe(df_aportaciones)
-
-# Sección de Portafolios
-st.header("Asignación de Portafolios")
-st.write("Distribución de Portafolios Básicos y Premier (Debe sumar 100%)")
-
-portafolios = {
-    "Allianz ETF Conservador Pesos": st.slider("Allianz ETF Conservador Pesos", 0, 100, 0),
-    "Allianz ETF Balanceado Pesos": st.slider("Allianz ETF Balanceado Pesos", 0, 100, 0),
-    "Allianz ETF Dinámico Pesos": st.slider("Allianz ETF Dinámico Pesos", 0, 100, 0),
-    "Allianz ETF Real Pesos": st.slider("Allianz ETF Real Pesos", 0, 100, 0),
-    "Allianz Global": st.slider("Allianz Global", 0, 100, 0)
+# Rendimientos según portafolio (ajusta los valores cuando los tengas)
+rendimiento_anual = {
+    "Allianz ETF Conservador Pesos": 0.00,
+    "Allianz ETF Conservador Dólares": 0.00,
+    "Allianz ETF Conservador Euros": 0.00,
+    "Allianz ETF Balanceado Pesos": 0.00,
+    "Allianz ETF Balanceado Dólares": 0.00,
+    "Allianz ETF Balanceado Euros": 0.00,
+    "Allianz ETF Dinámico Pesos": 0.00,
+    "Allianz ETF Dinámico Dólares": 0.00,
+    "Allianz ETF Dinámico Euros": 0.00,
+    "Allianz ETF Real Pesos": 0.00,
+    "Allianz Global": 0.00
 }
+tasa_rendimiento = rendimiento_anual[portafolio_seleccionado]
 
-# Validación de la suma de porcentajes
-suma_porcentajes = sum(portafolios.values())
-if suma_porcentajes != 100:
-    st.warning(f"La suma de los porcentajes debe ser 100%. Actualmente es {suma_porcentajes}%.")
+# Cálculo de proyección de rendimiento
+valores = [aportacion_inicial]
+for i in range(anos_proyeccion):
+    nuevo_valor = valores[-1] * (1 + tasa_rendimiento)
+    valores.append(nuevo_valor)
 
-# Botón para calcular y mostrar los resultados
-if st.button("Calcular"):
-    if suma_porcentajes == 100:
-        st.success("Cálculo realizado con éxito.")
-        # Aquí podrías agregar la lógica para calcular el rendimiento o hacer proyecciones
-        st.write("Aquí se mostrarían los resultados de las proyecciones.")
-    else:
-        st.error("Por favor, asegúrate de que la suma de los porcentajes sea igual a 100% antes de calcular.")
+# Mostrar resultados en tabla
+df_resultado = pd.DataFrame({"Año": list(range(anos_proyeccion + 1)), "Valor proyectado": valores})
+st.write(df_resultado)
+
+# Gráfica de rendimiento
+st.subheader("Gráfica de Rendimiento Proyectado")
+fig, ax = plt.subplots()
+ax.plot(df_resultado["Año"], df_resultado["Valor proyectado"], marker='o')
+ax.set_xlabel("Año")
+ax.set_ylabel("Valor Proyectado ($)")
+ax.set_title(f"Proyección del Portafolio seleccionado: {portafolio_seleccionado}")
+st.pyplot(fig)
+
+# Mensaje de conclusión
+st.success(f"Estimado {nombre}, a los {edad_proyecto} años tendrás un valor estimado de inversión de ${valores[-1]:,.2f} en el portafolio {portafolio_seleccionado}.")
+
     
