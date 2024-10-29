@@ -146,37 +146,47 @@ if precios_historicos is not None and not precios_historicos.empty:
     rendimiento_log = np.log(precios_historicos['Close'].iloc[-1] / precios_historicos['Close'].iloc[0])
     rendimiento_anualizado = rendimiento_log / (precios_historicos.shape[0] / 252)  # Ajustar por días de negociación
 
-    # Proyección de valor a través de los años
-    anos_proyeccion = edad_proyecto - edad
-    valor_proyectado = []
+# Proyección de valor a través de los años
+anos_proyeccion = edad_proyecto - edad
+valor_proyectado = []
     
-    for i in range(anos_proyeccion + 1):
-        valor = aportacion_inicial * (1 + rendimiento_anualizado) ** i
-        valor_proyectado.append(valor)
+for i in range(anos_proyeccion + 1):
+    valor = aportacion_inicial * (1 + rendimiento_anualizado) ** i
+    valor_proyectado.append(valor)
     
-    # Mostrar resultados en tabla
-    df_resultado = pd.DataFrame({"Año": list(range(anos_proyeccion + 1)), "Valor proyectado": valor_proyectado})
-    st.write(df_resultado)
+# Mostrar resultados en tabla
+df_resultado = pd.DataFrame({"Año": list(range(anos_proyeccion + 1)), "Valor proyectado": valor_proyectado})
+st.write(df_resultado)
 
-    # Gráfica de Rendimiento Proyectado
-    st.subheader("Gráfica de Rendimiento Proyectado")
-    plt.style.use('seaborn-darkgrid')
-    
-    fig, ax = plt.subplots(figsize=(10, 6))  # Ajustar tamaño de la figura
-    ax.plot(df_resultado["Año"], df_resultado["Valor proyectado"], 
-            marker='o', color='royalblue', linewidth=2, markersize=8, label='Valor Proyectado')
-    
-    # Etiquetas y título
-    ax.set_xlabel("Año", fontsize=14)
-    ax.set_ylabel("Valor Proyectado ($)", fontsize=14)
-    ax.set_title(f"Proyección del Portafolio seleccionado: {selected_ticker}", fontsize=16)
-    ax.legend()  # Agregar leyenda
-    ax.grid(True)
-    ax.tick_params(axis='both', which='major', labelsize=12)
-    
-    # Mostrar la gráfica en Streamlit
-    st.pyplot(fig)
+# Gráfica de Rendimiento Proyectado
+st.subheader("Gráfica de Rendimiento Proyectado")
+   
+# Establecer un estilo para la gráfica
+plt.style.use('ggplot')  # Cambia a un estilo más básico
 
+# Crear la figura y el eje
+fig, ax = plt.subplots(figsize=(10, 6))  # Ajustar tamaño de la figura
+
+# Graficar los datos
+ax.plot(df_resultado["Año"], df_resultado["Valor proyectado"], 
+        marker='o', color='royalblue', linewidth=2, markersize=8, label='Valor Proyectado')
+
+# Etiquetas y título
+ax.set_xlabel("Año", fontsize=14)
+ax.set_ylabel("Valor Proyectado ($)", fontsize=14)
+ax.set_title(f"Proyección del Portafolio seleccionado: {ticker}", fontsize=16)
+ax.legend()  # Agregar leyenda
+
+# Añadir cuadrícula
+ax.grid(True)
+
+# Formato de los ejes
+ax.tick_params(axis='both', which='major', labelsize=12)
+
+# Mostrar la gráfica en Streamlit
+st.pyplot(fig)
+
+   
     # Mensaje final personalizado
     st.success(f"{nombre} {apellido_paterno}, según el análisis, a los {edad_proyecto} años tendrás un valor estimado de inversión de ${valor_proyectado[-1]:,.2f} en el portafolio seleccionado.")
 else:
