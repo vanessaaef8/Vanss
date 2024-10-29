@@ -8,7 +8,19 @@ st.title("Simulador OptiMaxx Patrimonial - Allianz")
 
 # Datos del cliente
 st.header("Datos del Cliente")
-nombre = st.text_input("Nombre completo")
+col1, col2, col3 = st.columns(3)
+with col1:
+    nombre = st.text_input("Nombre")
+with col2:
+    apellido_paterno = st.text_input("Apellido Paterno")
+with col3:
+    apellido_materno = st.text_input("Apellido Materno")
+
+# Verificar si se han llenado todos los campos de nombre
+if not nombre or not apellido_paterno or not apellido_materno:
+    st.warning("Por favor, completa todos los campos de nombre, apellido paterno y apellido materno para continuar.")
+    st.stop()  # Detener la ejecución hasta que se completen los campos
+
 edad = st.number_input("Edad", min_value=18, max_value=100, step=1)
 edad_proyecto = st.number_input("Edad a proyectar", min_value=edad, max_value=100, step=1)
 
@@ -71,7 +83,8 @@ ax.set_ylabel("Valor Proyectado ($)")
 ax.set_title(f"Proyección del Portafolio seleccionado: {portafolio_seleccionado}")
 st.pyplot(fig)
 
-# Mensaje de conclusión
-st.success(f"Estimado {nombre}, a los {edad_proyecto} años tendrás un valor estimado de inversión de ${valores[-1]:,.2f} en el portafolio {portafolio_seleccionado}.")
+# Mensaje final personalizado
+st.success(f"{nombre} {apellido_paterno}, según el análisis, a los {edad_proyecto} años tendrás un valor estimado de inversión de ${valores[-1]:,.2f} en el portafolio {portafolio_seleccionado} que puedes ver en la gráfica.")
+
 
     
