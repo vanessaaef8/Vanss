@@ -209,14 +209,14 @@ def rendimiento_y_riesgo_por_periodo(precios_historicos, periodo):
         else:
             raise ValueError("Periodo no reconocido.")
 
-        # Calcular el rendimiento logarítmico
-        rendimiento_log = np.log(datos_periodo['Close'].iloc[-1] / datos_periodo['Close'].iloc[0])
-        rendimiento_anualizado = rendimiento_log / (datos_periodo.shape[0] / 252)  # Ajustar por días de negociación
+# Calcular el rendimiento logarítmico
+rendimiento_log = np.log(datos_periodo['Close'].iloc[-1] / datos_periodo['Close'].iloc[0])
+rendimiento_anualizado = rendimiento_log / (datos_periodo.shape[0] / 252)  # Ajustar por días de negociación
 
-        # Calcular el riesgo
-        rendimientos_diarios = np.log(datos_periodo['Close'] / datos_periodo['Close'].shift(1)).dropna()
-        desviacion_diaria = rendimientos_diarios.std()
-        riesgo_anualizado = desviacion_diaria * np.sqrt(252)
+# Calcular el riesgo
+rendimientos_diarios = np.log(datos_periodo['Close'] / datos_periodo['Close'].shift(1)).dropna()
+desviacion_diaria = rendimientos_diarios.std()
+riesgo_anualizado = desviacion_diaria * np.sqrt(252)
 
         return rendimiento_anualizado, riesgo_anualizado
     except Exception as e:
@@ -239,43 +239,43 @@ for nombre, ticker in zip(etf_nombres, etf_tickers):
     # Obtener el precio actual
     precio_actual = obtener_precio_actual(ticker)
 
-    # Calcular el rendimiento logarítmico anualizado
-    if precios_historicos is not None and not precios_historicos.empty:
+# Calcular el rendimiento logarítmico anualizado
+if precios_historicos is not None and not precios_historicos.empty:
         rendimiento_log_geom = rendimiento_logaritmico(precios_historicos)
         riesgo_promedio = calcular_riesgo_promedio(precios_historicos)
         ratio_riesgo_rendimiento = calcular_ratio_riesgo_rendimiento(rendimiento_log_geom, riesgo_promedio)
 
-        # Calcular rendimiento y riesgo para diferentes periodos
-        periodos = ['1m', '3m', '6m', '1y', 'YTD', '3y', '5y', '10y']
-        rendimientos = {}
-        riesgos = {}
+# Calcular rendimiento y riesgo para diferentes periodos
+periodos = ['1m', '3m', '6m', '1y', 'YTD', '3y', '5y', '10y']
+rendimientos = {}
+riesgos = {}
         
-        for periodo in periodos:
-            rendimiento, riesgo = rendimiento_y_riesgo_por_periodo(precios_historicos, periodo)
-            rendimientos[periodo] = rendimiento
-            riesgos[periodo] = riesgo
+    for periodo in periodos:
+        rendimiento, riesgo = rendimiento_y_riesgo_por_periodo(precios_historicos, periodo)
+        rendimientos[periodo] = rendimiento
+        riesgos[periodo] = riesgo
 
-    else:
-        rendimiento_log_geom = None
-        riesgo_promedio = None
-        ratio_riesgo_rendimiento = None
-        rendimientos = {periodo: None for periodo in periodos}
-        riesgos = {periodo: None for periodo in periodos}
+else:
+    rendimiento_log_geom = None
+    riesgo_promedio = None
+    ratio_riesgo_rendimiento = None
+    rendimientos = {periodo: None for periodo in periodos}
+    riesgos = {periodo: None for periodo in periodos}
     
-    # Añadir la información a la lista de ETFs
-    ETFs_Data.append({
-        "nombre": nombre,
-        "simbolo": ticker,
-        "nombre_corto": nombre_corto,
-        "descripcion_larga": descripcion_larga,
-        "precios_historicos": precios_historicos,
-        "precio_actual": precio_actual,
-        "rendimiento_log_geom": rendimiento_log_geom,
-        "riesgo_promedio": riesgo_promedio,
-        "ratio_riesgo_rendimiento": ratio_riesgo_rendimiento,
-        "rendimientos": rendimientos,
-        "riesgos": riesgos
-    })
+# Añadir la información a la lista de ETFs
+ETFs_Data.append({
+    "nombre": nombre,
+    "simbolo": ticker,
+    "nombre_corto": nombre_corto,
+    "descripcion_larga": descripcion_larga,
+    "precios_historicos": precios_historicos,
+    "precio_actual": precio_actual,
+    "rendimiento_log_geom": rendimiento_log_geom,
+    "riesgo_promedio": riesgo_promedio,
+    "ratio_riesgo_rendimiento": ratio_riesgo_rendimiento,
+    "rendimientos": rendimientos,
+    "riesgos": riesgos
+})
 
 # Mostrar resultados en tabla
 df_resultado = pd.DataFrame({"Año": list(range(anos_proyeccion + 1)), "Valor proyectado": rendimientos})
