@@ -53,7 +53,7 @@ if not isinstance(edad, (int, float)):
 
 # Validación de la edad a proyectar
 edad_maxima = 150
-edad_proyecto = st.number_input("Edad a proyectar", min_value=edad+5, max_value=edad_maxima, step=1)
+edad_proyecto = st.number_input("Edad a proyectar", min_value=edad + 5, max_value=edad_maxima, step=1)
 if not isinstance(edad_proyecto, (int, float)):
     st.error("Por favor, ingresa un valor numérico para la edad a proyectar.")
     st.stop()
@@ -61,17 +61,19 @@ if not isinstance(edad_proyecto, (int, float)):
 if edad_proyecto > edad_maxima:
     st.warning(f"La edad a proyectar no puede ser mayor a {edad_maxima} años.")
     st.stop()  # Detener la ejecución si la validación falla
-    
+
 # Datos de inversión inicial
 st.header("Inversión Inicial")
 aportacion_inicial = st.number_input("Aportación inicial", min_value=1000.0, step=100.0)
+
 def validar_aportacion_inicial(aportacion_inicial):
-    st.stop()
-    
-if aportacion_inicial <= 0:
-    st.error("La aportación inicial debe ser un valor positivo.")
-return False
+    if aportacion_inicial <= 0:
+        st.error("La aportación inicial debe ser un valor positivo.")
+        return False
     return True
+
+if not validar_aportacion_inicial(aportacion_inicial):
+    st.stop()
 
 # Lista de nombres de ETFs y sus símbolos
 etf_nombres = [
@@ -144,7 +146,7 @@ def obtener_data(ticker):
         info = accion.info
         nombre_corto = info.get('shortName', 'No disponible')
         descripcion_larga = info.get('longBusinessSummary', 'Descripción no disponible')
-        return nombre_corto, descripcion_traducida
+        return nombre_corto, descripcion_larga
     except Exception as e:
         print(f"Error al obtener datos para {ticker}: {e}")
         return 'No disponible', 'Descripción no disponible'
@@ -209,108 +211,52 @@ def rendimiento_y_riesgo_por_periodo(precios_historicos, periodo):
         else:
             raise ValueError("Periodo no reconocido.")
 
-# Calcular el rendimiento logarítmico
-rendimiento_log = np.log(datos_periodo['Close'].iloc[-1] / datos_periodo['Close'].iloc[0])
-rendimiento_anualizado = rendimiento_log / (datos_periodo.shape[0] / 252)  # Ajustar por días de negociación
+        # Calcular el rendimiento logarítmico
+        rendimiento_log = np.log(datos_periodo['Close'].iloc[-1] / datos_periodo['Close'].iloc[0])
+        riesgo_promedio = calcular_riesgo_promedio(datos_periodo)
 
-# Calcular el riesgo
-rendimientos_diarios = np.log(datos_periodo['Close'] / datos_periodo['Close'].shift(1)).dropna()
-desviacion_diaria = rendimientos_diarios.std()
-riesgo_anualizado = desviacion_diaria * np.sqrt(252)
-
-        return rendimiento_anualizado, riesgo_anualizado
+        return rendimiento_log, riesgo_promedio
     except Exception as e:
-        print(f"Error al calcular rendimiento y riesgo para el periodo {periodo}: {e}")
+        print(f"Error en el cálculo del rendimiento y riesgo para el periodo '{periodo}': {e}")
         return None, None
 
-# Variable para almacenar la información de los ETFs
-ETFs_Data = []
+# Lista para guardar los ratios de riesgo-rendimiento
+ratios_riesgo_rendimiento = []
 
-# Descargar precios históricos para todos los tickers
-precios_historicos_todos = descargar_datos_historicos(etf_tickers)
+# Para cada ETF, calcula y presenta el rendimiento y riesgo
+for etf_ticker in etf_tickers:
+    precios_historicos = descargar_datos_historicos([etf_ticker])
+    if precios_historicos[etf_ticker] is not None:
+        rendimiento_anualizado = rendimiento_logaritmico(precios_historicos[etf_ticker])
+        riesgo_promedio = calcular_riesgo_promedio(precios_historicos[etf_ticker])
+        ratio_riesgo_rendimiento = calcular_ratio_riesgo_rendimiento(rendimiento_anualizado, riesgo_promedio)
+        ratios_riesgo_rendimiento.append((etf_nombres[etf_tickers.index(etf_ticker)], ratio_riesgo_rendimiento))
 
-# Iterar sobre los ETFs y obtener la información
-for nombre, ticker in zip(etf_nombres, etf_tickers):
-    nombre_corto, descripcion_larga = obtener_data(ticker)
-    
-    # Obtener los precios históricos del ticker actual
-    precios_historicos = precios_historicos_todos.get(ticker)
-    
-    # Obtener el precio actual
-    precio_actual = obtener_precio_actual(ticker)
+# Muestra los ratios en la aplicación
+st.header("Ratios Riesgo-Rendimiento por ETF")
+for nombre_etf, ratio in ratios_riesgo_rendimiento:
+    if ratio is not None:
+        st.write(f"**{nombre_etf}:** {ratio:.4f}")
+    else:
+        st.write(f"**{nombre_etf}:** Sin datos suficientes para calcular el ratio.")
 
-# Calcular el rendimiento logarítmico anualizado
-if precios_historicos is not None and not precios_historicos.empty:
-        rendimiento_log_geom = rendimiento_logaritmico(precios_historicos)
-        riesgo_promedio = calcular_riesgo_promedio(precios_historicos)
-        ratio_riesgo_rendimiento = calcular_ratio_riesgo_rendimiento(rendimiento_log_geom, riesgo_promedio)
+# Mostrar gráficos de rendimiento de cada ETF
+st.header("Gráficos de Rendimiento de los ETFs")
+for etf_ticker in etf_tickers:
+    precios_historicos = descargar_datos_historicos([etf_ticker])
+    if precios_historicos[etf_ticker] is not None:
+        plt.figure(figsize=(10, 5))
+        plt.plot(precios_historicos[etf_ticker]['Close'], label=etf_nombres[etf_tickers.index(etf_ticker)])
+        plt.title(f"Rendimiento de {etf_nombres[etf_tickers.index(etf_ticker)]} - {etf_ticker}")
+        plt.xlabel("Fecha")
+        plt.ylabel("Precio de Cierre")
+        plt.legend()
+        st.pyplot(plt)
 
-# Calcular rendimiento y riesgo para diferentes periodos
-periodos = ['1m', '3m', '6m', '1y', 'YTD', '3y', '5y', '10y']
-rendimientos = {}
-riesgos = {}
-        
-    for periodo in periodos:
-        rendimiento, riesgo = rendimiento_y_riesgo_por_periodo(precios_historicos, periodo)
-        rendimientos[periodo] = rendimiento
-        riesgos[periodo] = riesgo
+# Sugerencias y recomendaciones
+st.header("Sugerencias y Recomendaciones")
+st.write("""
+    Basado en los datos analizados, se recomienda considerar ETFs que tengan un alto ratio de riesgo-rendimiento. 
+    Un ratio más alto indica que el rendimiento potencial es mayor en comparación con el riesgo asumido.
+""")
 
-else:
-    rendimiento_log_geom = None
-    riesgo_promedio = None
-    ratio_riesgo_rendimiento = None
-    rendimientos = {periodo: None for periodo in periodos}
-    riesgos = {periodo: None for periodo in periodos}
-    
-# Añadir la información a la lista de ETFs
-ETFs_Data.append({
-    "nombre": nombre,
-    "simbolo": ticker,
-    "nombre_corto": nombre_corto,
-    "descripcion_larga": descripcion_larga,
-    "precios_historicos": precios_historicos,
-    "precio_actual": precio_actual,
-    "rendimiento_log_geom": rendimiento_log_geom,
-    "riesgo_promedio": riesgo_promedio,
-    "ratio_riesgo_rendimiento": ratio_riesgo_rendimiento,
-    "rendimientos": rendimientos,
-    "riesgos": riesgos
-})
-
-# Mostrar resultados en tabla
-df_resultado = pd.DataFrame({"Año": list(range(anos_proyeccion + 1)), "Valor proyectado": rendimientos})
-st.write(df_resultado)
-
-# Suponiendo que df_resultado ya está definido
-st.subheader("Gráfica de Rendimiento Proyectado")
-
-# Establecer un estilo para la gráfica
-plt.style.use('seaborn-darkgrid')
-
-# Crear la figura y el eje
-fig, ax = plt.subplots(figsize=(10, 6))  # Ajustar tamaño de la figura
-
-# Graficar los datos
-ax.plot(df_resultado["Año"], df_resultado["Valor proyectado"], 
-        marker='o', color='royalblue', linewidth=2, markersize=8, label='Valor Proyectado')
-
-# Etiquetas y título
-ax.set_xlabel("Año", fontsize=14)
-ax.set_ylabel("Valor Proyectado ($)", fontsize=14)
-ax.set_title(f"Proyección del Portafolio seleccionado: {ticker}", fontsize=16)
-ax.legend()  # Agregar leyenda
-
-# Añadir cuadrícula
-ax.grid(True)
-
-# Formato de los ejes
-ax.tick_params(axis='both', which='major', labelsize=12)
-
-# Mostrar la gráfica en Streamlit
-st.pyplot(fig)
-
-# Mensaje final personalizado
-st.success(f"{nombre} {apellido_paterno}, según el análisis, a los {edad_proyecto} años tendrás un valor estimado de inversión de ${valores[-1]:,.2f} en el portafolio seleccionado.")
-
-
-    
