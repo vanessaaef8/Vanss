@@ -2,7 +2,31 @@ import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
+import yfinance as yf
 
+# Cambiar el fondo a una imagen y el color del texto
+st.markdown(
+    """
+    <style>
+    .reportview-container {
+        background-image: url('https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.allianz.com.mx%2Fseguros%2Fahorro-e-inversion%2Fseguros-inversion.html&psig=AOvVaw3s1q_dnih-u_S2ORpD3cJJ&ust=1730321277064000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCJCFyqG7tIkDFQAAAAAdAAAAABAE
+'); /* Cambia la URL por la de tu imagen */
+        background-size: cover; /* Asegura que la imagen cubra todo el fondo */
+        color: white; /* Color del texto */
+    }
+    .sidebar .sidebar-content {
+        background-color: rgba(0, 0, 0, 0.8); /* Fondo oscuro y semitransparente para la barra lateral */
+        color: white; /* Color del texto de la barra lateral */
+    }
+    .stButton>button {
+        color: black; /* Color del texto del botón */
+        background-color: white; /* Fondo del botón */
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+   
 # Título de la app
 st.title("Simulador OptiMaxx Patrimonial - Allianz")
 
@@ -26,7 +50,7 @@ if not isinstance(edad, (int, float)):
 
 # Validación de la edad a proyectar
 edad_maxima = 150
-edad_proyecto = st.number_input("Edad a proyectar", min_value=edad, max_value=edad_maxima, step=1)
+edad_proyecto = st.number_input("Edad a proyectar", min_value=edad+5, max_value=edad_maxima, step=1)
 if not isinstance(edad_proyecto, (int, float)):
     st.error("Por favor, ingresa un valor numérico para la edad a proyectar.")
     st.stop()
@@ -47,123 +71,84 @@ def validar_aportacion_inicial(aportacion_inicial):
 # Número de años para proyectar
 anos_proyeccion = st.slider("Años de proyección", min_value=1, max_value=30, step=1)
 
-# Dividir los portafolios en básicos y premier
-portafolios_basicos = [
-    "Allianz ETF Conservador Pesos",
-    "Allianz ETF Conservador Dólares",
-    "Allianz ETF Conservador Euros",
-    "Allianz ETF Balanceado Pesos",
-    "Allianz ETF Balanceado Dólares",
-    "Allianz ETF Balanceado Euros",
-    "Allianz ETF Dinámico Pesos",
-    "Allianz ETF Dinámico Dólares",
-    "Allianz ETF Dinámico Euros",
-    "Allianz ETF Real Pesos",
-    "Allianz Global"
-]
-
-portafolios_premier = [
-    "AZ China",	
-    "AZ MSCI TAIWAN INDEX FD",	
-    "AZ RUSSELL 2000",
-    "AZ Brasil",
-    "AZ MSCI UNITED KINGDOM",
-    "AZ DJ US FINANCIAL SECT",
-    "AZ BRIC",
-    "AZ MSCI SOUTH KOREA IND",
-    "AZ BARCLAYS AGGREGATE",
-    "AZ Mercados Emergentes",
-    "AZ MSCI EMU",
-    "AZ FTSE/XINHUA CHINA 25",
-    "AZ Oro",
-    "AZ LATIXX MEX CETETRAC",
+# Lista de nombres de ETFs y sus símbolos
+etf_nombres = [
     "AZ QQQ NASDAQ 100",
-    "AZ MSCI ASIA EX-JAPAN",
-    "AZ LATIXX MEX M10TRAC",
-    "AZ BARCLAYS 1-3 YEAR TR",
-    "AZ MSCI ACWI INDEX FUND",	
-    "AZ LATIXX MEXICO M5TRAC",	
-    "AZ SILVER TRUST",
-    "AZ MSCI HONG KONG INDEX",
-    "AZ LATIXX MEX UDITRAC",	
-    "AZ SPDR S&P 500 ETF TRUST",	
-    "AZ MSCI JAPAN INDEX FD",
-    "AZ BG EUR GOVT BOND 1-3",	
-    "AZ SPDR DJIA TRUST",	
-    "AZ MSCI FRANCE INDEX FD",	
-    "AZ DJ US OIL & GAS EXPL",	
-    "AZ VANGUARD EMERGING MARKET ETF",	
-    "AZ MSCI AUSTRALIA INDEX",	
-    "AZ IPC LARGE CAP T R TR",	
-    "AZ FINANCIAL SELECT SECTOR SPDR",	
-    "AZ MSCI CANADA",
-    "AZ S&P LATIN AMERICA 40",	
-    "AZ HEALTH CARE SELECT SECTOR",	
-    "AZ MSCI GERMANY INDEX",
+    "AZ SPDR S&P 500 ETF TRUST",
+    "AZ SPDR DJIA TRUST",
+    "AZ VANGUARD EMERGING MARKET ETF",
+    "AZ FINANCIAL SELECT SECTOR SPDR",
+    "AZ HEALTH CARE SELECT SECTOR",
     "AZ DJ US HOME CONSTRUCT",
+    "AZ SILVER TRUST",
+    "AZ MSCI TAIWAN INDEX FD",
+    "AZ MSCI UNITED KINGDOM",
+    "AZ MSCI SOUTH KOREA IND",
+    "AZ MSCI EMU",
+    "AZ MSCI JAPAN INDEX FD",
+    "AZ MSCI CANADA",
+    "AZ MSCI GERMANY INDEX",
+    "AZ MSCI AUSTRALIA INDEX",
+    "AZ BARCLAYS AGGREGATE"
 ]
 
-# Opción para elegir entre básico o premie
-tipo_portafolio = st.selectbox("Selecciona el tipo de portafolio", ["Básico", "Premier"])
+# Tickers correspondientes a los ETFs
+etf_tickers = [
+    "QQQ",
+    "SPY",
+    "DIA",
+    "VWO",
+    "XLF",
+    "XLV",
+    "ITB",
+    "SLV",
+    "EWT",
+    "EWU",
+    "EWY",
+    "EZU",
+    "EWJ",
+    "EWC",
+    "EWG",
+    "EWA",
+    "AGG"
+]
 
-# Mostrar los portafolios disponibles según la selección
-if tipo_portafolio == "Básico":
-    portafolio_seleccionado = st.selectbox("Selecciona el portafolio", portafolios_basicos)
-elif tipo_portafolio == "Premier":
-    portafolio_seleccionado = st.selectbox("Selecciona el portafolio", portafolios_premier)
+for ticker in etf_tickers:
+    data = yf.download(ticker, start="2013-12-31", end="2023-12-31")
+    data.to_csv(f"{ticker}.csv")
 
-# Rendimientos según portafolio (ajusta los valores cuando los tengas)
-rendimiento_anual = {
-    "Allianz ETF Conservador Pesos": 0.00,
-    "Allianz ETF Conservador Dólares": 0.00,
-    "Allianz ETF Conservador Euros": 0.00,
-    "Allianz ETF Balanceado Pesos": 0.00,
-    "Allianz ETF Balanceado Dólares": 0.00,
-    "Allianz ETF Balanceado Euros": 0.00,
-    "Allianz ETF Dinámico Pesos": 0.00,
-    "Allianz ETF Dinámico Dólares": 0.00,
-    "Allianz ETF Dinámico Euros": 0.00,
-    "Allianz ETF Real Pesos": 0.00,
-    "Allianz Global": 0.00,
-    "AZ China": 0.00,	
-    "AZ MSCI TAIWAN INDEX FD": 0.00,	
-    "AZ RUSSELL 2000": 0.00,
-    "AZ Brasil": 0.00,
-    "AZ MSCI UNITED KINGDOM": 0.00,
-    "AZ DJ US FINANCIAL SECT": 0.00,
-    "AZ BRIC": 0.00,
-    "AZ MSCI SOUTH KOREA IND": 0.00,
-    "AZ BARCLAYS AGGREGATE": 0.00,
-    "AZ Mercados Emergentes": 0.00,
-    "AZ MSCI EMU": 0.00,
-    "AZ FTSE/XINHUA CHINA 25": 0.00,
-    "AZ Oro": 0.00,
-    "AZ LATIXX MEX CETETRAC": 0.00,
-    "AZ QQQ NASDAQ 100": 0.00,
-    "AZ MSCI ASIA EX-JAPAN": 0.00,
-    "AZ LATIXX MEX M10TRAC": 0.00,
-    "AZ BARCLAYS 1-3 YEAR TR": 0.00,
-    "AZ MSCI ACWI INDEX FUND": 0.00,	
-    "AZ LATIXX MEXICO M5TRAC": 0.00,	
-    "AZ SILVER TRUST": 0.00,
-    "AZ MSCI HONG KONG INDEX": 0.00,
-    "AZ LATIXX MEX UDITRAC": 0.00,	
-    "AZ SPDR S&P 500 ETF TRUST": 0.00,	
-    "AZ MSCI JAPAN INDEX FD": 0.00,
-    "AZ BG EUR GOVT BOND 1-3": 0.00,	
-    "AZ SPDR DJIA TRUST": 0.00,	
-    "AZ MSCI FRANCE INDEX FD": 0.00,	
-    "AZ DJ US OIL & GAS EXPL": 0.00,	
-    "AZ VANGUARD EMERGING MARKET ETF": 0.00,	
-    "AZ MSCI AUSTRALIA INDEX": 0.00,	
-    "AZ IPC LARGE CAP T R TR": 0.00,	
-    "AZ FINANCIAL SELECT SECTOR SPDR": 0.00,	
-    "AZ MSCI CANADA": 0.00,
-    "AZ S&P LATIN AMERICA 40": 0.00,	
-    "AZ HEALTH CARE SELECT SECTOR": 0.00,	
-    "AZ MSCI GERMANY INDEX": 0.00,
-    "AZ DJ US HOME CONSTRUCT": 0.00,
-}
+def descargar_datos_historicos(etf_tickers):
+    """Descarga los precios históricos de los últimos 10 años para una lista de tickers."""
+    fecha_inicio, fecha_fin = obtener_fechas_ultimos_diez_anos()
+    precios_historicos = {}
+    
+    for ticker in etf_tickers:
+        try:
+            accion = yf.Ticker(ticker)
+            datos = accion.history(start=fecha_inicio, end=fecha_fin)
+            precios_historicos[ticker] = datos
+        except Exception as e:
+            print(f"Error al descargar datos para {ticker}: {e}")
+            precios_historicos[ticker] = None
+    
+    return precios_historicos
+    
+def obtener_info_etf(ticker):
+    """Obtiene el nombre corto y la descripción larga de un ETF dado su ticker."""
+    
+    try:
+        # Encuentra el índice del ticker en la lista
+        index = etf_tickers.index(ticker)
+        
+        # Obtiene el nombre correspondiente
+        nombre_corto = etf_nombres[index]
+        
+        # Genera una descripción larga (puedes personalizarla según tus necesidades)
+        descripcion_larga = f"{nombre_corto} es un ETF que busca replicar el rendimiento del índice correspondiente a su ticker."
+        
+        return nombre_corto, descripcion_larga
+    except ValueError:
+        return None, f"Ticker '{ticker}' no encontrado."
 
 tasa_rendimiento = rendimiento_anual[portafolio_seleccionado]
 def validar_tasa_rendimiento(tasa):
@@ -181,6 +166,8 @@ valores = [aportacion_inicial]
 for i in range(anos_proyeccion):
     nuevo_valor = valores[-1] * (1 + tasa_rendimiento)
     valores.append(nuevo_valor)
+if not validar_aportacion_inicial(aportacion_inicial):
+    st.stop()
 
 # Mostrar resultados en tabla
 df_resultado = pd.DataFrame({"Año": list(range(anos_proyeccion + 1)), "Valor proyectado": valores})
