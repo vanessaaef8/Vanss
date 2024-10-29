@@ -6,7 +6,6 @@ import yfinance as yf
 from datetime import datetime, timedelta
 
 # Cambiar el fondo a una imagen y el color del texto
-# Cambiar el fondo a una imagen y el color del texto
 st.markdown(
     """
     <style>
@@ -74,14 +73,6 @@ def validar_aportacion_inicial(aportacion_inicial):
 
 # Número de años para proyectar
 anos_proyeccion = st.slider("Años de proyección", min_value=1, max_value=30, step=1)
-
-import yfinance as yf
-from datetime import datetime, timedelta
-from googletrans import Translator
-import numpy as np
-
-# Inicializar el traductor
-translator = Translator()
 
 # Lista de nombres de ETFs y sus símbolos
 etf_nombres = [
