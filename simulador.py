@@ -8,7 +8,7 @@ import yfinance as yf
 st.markdown(
     """
     <style>
-    .appview-container {
+    .appview-container, .main {
         background-image: url('https://blog.monex.com.mx/hs-fs/hubfs/C-3.jpg?width=900&height=599&name=C-3.jpg'); /* Cambia la URL por la de tu imagen */
         background-size: cover; /* Asegura que la imagen cubra todo el fondo */
         color: white; /* Color del texto */
@@ -20,6 +20,9 @@ st.markdown(
     .stButton>button {
         color: black; /* Color del texto del botón */
         background-color: white; /* Fondo del botón */
+    }
+    h1, h2, h3, h4, h5, h6, p, div, label {
+        color: white !important; /* Cambia el color del texto en encabezados y párrafos a blanco */
     }
     </style>
     """,
