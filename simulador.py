@@ -3,6 +3,10 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import yfinance as yf
+from datetime import datetime, timedelta
+from googletrans import Translator
+
+translator = Translator()
 
 # Cambiar el fondo a una imagen y el color del texto
 st.markdown(
