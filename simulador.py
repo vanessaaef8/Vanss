@@ -66,7 +66,8 @@ if edad_proyecto > edad_maxima:
 st.header("Inversión Inicial")
 aportacion_inicial = st.number_input("Aportación inicial", min_value=1000.0, step=100.0)
 def validar_aportacion_inicial(aportacion_inicial):
-    st stop()
+    st.stop()
+    
 if aportacion_inicial <= 0:
         st.error("La aportación inicial debe ser un valor positivo.")
     return False
