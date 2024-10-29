@@ -43,10 +43,6 @@ def validar_aportacion_inicial(aportacion_inicial):
         st.error("La aportación inicial debe ser un valor positivo.")
         return False
     return True
-    
-aportacion_inicial = st.number_input("Aportación inicial", min_value=1000.0, step=100.0)
-if not validar_aportación_inicial(aportacion_inicial):
-    st.stop()
 
 # Número de años para proyectar
 anos_proyeccion = st.slider("Años de proyección", min_value=1, max_value=30, step=1)
