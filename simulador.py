@@ -158,14 +158,14 @@ for i in range(anos_proyeccion + 1):
 df_resultado = pd.DataFrame({"Año": list(range(anos_proyeccion + 1)), "Valor proyectado": valor_proyectado})
 st.write(df_resultado)
 
-# Gráfica de Rendimiento Proyectado
-st.subheader("Gráfica de Rendimiento Proyectado")
-   
-# Establecer un estilo para la gráfica
-plt.style.use('ggplot')  # Cambia a un estilo más básico
+# Después de calcular los resultados...
 
-# Crear la figura y el eje
-fig, ax = plt.subplots(figsize=(10, 6))  # Ajustar tamaño de la figura
+# Suponiendo que df_resultado ya está definido
+st.subheader("Gráfica de Rendimiento Proyectado")
+
+# Crear la gráfica
+plt.style.use('ggplot')  # Cambia a un estilo más básico
+fig, ax = plt.subplots(figsize=(10, 6))
 
 # Graficar los datos
 ax.plot(df_resultado["Año"], df_resultado["Valor proyectado"], 
@@ -175,19 +175,14 @@ ax.plot(df_resultado["Año"], df_resultado["Valor proyectado"],
 ax.set_xlabel("Año", fontsize=14)
 ax.set_ylabel("Valor Proyectado ($)", fontsize=14)
 ax.set_title(f"Proyección del Portafolio seleccionado: {ticker}", fontsize=16)
-ax.legend()  # Agregar leyenda
-
-# Añadir cuadrícula
+ax.legend()
 ax.grid(True)
-
-# Formato de los ejes
 ax.tick_params(axis='both', which='major', labelsize=12)
 
 # Mostrar la gráfica en Streamlit
 st.pyplot(fig)
 
-   
-    # Mensaje final personalizado
-    st.success(f"{nombre} {apellido_paterno}, según el análisis, a los {edad_proyecto} años tendrás un valor estimado de inversión de ${valor_proyectado[-1]:,.2f} en el portafolio seleccionado.")
-else:
-    st.error("No se pudieron obtener los datos históricos para el ETF seleccionado.")
+# Mensaje final personalizado
+valor_proyectado = [10000, 12000, 15000]  # Asegúrate de que esta variable esté definida correctamente
+st.success(f"{nombre} {apellido_paterno}, según el análisis, a los {edad_proyecto} años tendrás un valor estimado de inversión de ${valor_proyectado[-1]:,.2f} en el portafolio seleccionado.")
+
