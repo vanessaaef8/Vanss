@@ -75,6 +75,14 @@ def validar_aportacion_inicial(aportacion_inicial):
 # Número de años para proyectar
 anos_proyeccion = st.slider("Años de proyección", min_value=1, max_value=30, step=1)
 
+import yfinance as yf
+from datetime import datetime, timedelta
+from googletrans import Translator
+import numpy as np
+
+# Inicializar el traductor
+translator = Translator()
+
 # Lista de nombres de ETFs y sus símbolos
 etf_nombres = [
     "AZ QQQ NASDAQ 100",
@@ -95,9 +103,6 @@ etf_nombres = [
     "AZ MSCI AUSTRALIA INDEX",
     "AZ BARCLAYS AGGREGATE"
 ]
-
-# Selección del portafolio por el usuario
-portafolio_seleccionado = st.selectbox("Selecciona un portafolio", etf_nombres)
 
 # Tickers correspondientes a los ETFs
 etf_tickers = [
@@ -121,16 +126,17 @@ etf_tickers = [
 ]
 
 def obtener_fechas_ultimos_diez_anos():
+    """Obtiene las fechas de inicio y fin para los últimos 10 años."""
     fecha_fin = datetime.now()
-    fecha_inicio = fecha_fin - timedelta(days=10*365)  # Aproximadamente 10 años atrás
-    return fecha_inicio.strftime('%Y-%m-%d'), fecha_fin.strftime('%Y-%m-%d')
-    
-def descargar_datos_historicos(etf_tickers):
+    fecha_inicio = fecha_fin - timedelta(days=365 * 10)  # 10 años
+    return fecha_inicio.strftime("%Y-%m-%d"), fecha_fin.strftime("%Y-%m-%d")
+
+def descargar_datos_historicos(tickers):
     """Descarga los precios históricos de los últimos 10 años para una lista de tickers."""
     fecha_inicio, fecha_fin = obtener_fechas_ultimos_diez_anos()
     precios_historicos = {}
     
-    for ticker in etf_tickers:
+    for ticker in tickers:
         try:
             accion = yf.Ticker(ticker)
             datos = accion.history(start=fecha_inicio, end=fecha_fin)
@@ -247,42 +253,36 @@ precios_historicos_todos = descargar_datos_historicos(etf_tickers)
 for nombre, ticker in zip(etf_nombres, etf_tickers):
     nombre_corto, descripcion_larga = obtener_data(ticker)
     
-# Diccionario con el rendimiento anual de cada portafolio
-rendimiento_anual = {etf_nombres[i]: ETFs_Data[i]["rendimiento_log_geom"] for i in range(len(etf_nombres))}
-
-# Obtiene la tasa de rendimiento del portafolio seleccionado
-tasa_rendimiento = rendimiento_anual.get(portafolio_seleccionado, 0)
-
-# Obtener los precios históricos del ticker actual
-precios_historicos = precios_historicos_todos.get(ticker)
+    # Obtener los precios históricos del ticker actual
+    precios_historicos = precios_historicos_todos.get(ticker)
     
-# Obtener el precio actual
-precio_actual = obtener_precio_actual(ticker)
+    # Obtener el precio actual
+    precio_actual = obtener_precio_actual(ticker)
 
-# Calcular el rendimiento logarítmico anualizado
-# Calcular el rendimiento logarítmico anualizado
-if precios_historicos is not None and not precios_historicos.empty:
-    rendimiento_log_geom = rendimiento_logaritmico(precios_historicos)
-    riesgo_promedio = calcular_riesgo_promedio(precios_historicos)
-    ratio_riesgo_rendimiento = calcular_ratio_riesgo_rendimiento(rendimiento_log_geom, riesgo_promedio)
+    # Calcular el rendimiento logarítmico anualizado
+    if precios_historicos is not None and not precios_historicos.empty:
+        rendimiento_log_geom = rendimiento_logaritmico(precios_historicos)
+        riesgo_promedio = calcular_riesgo_promedio(precios_historicos)
+        ratio_riesgo_rendimiento = calcular_ratio_riesgo_rendimiento(rendimiento_log_geom, riesgo_promedio)
 
-    # Calcular rendimiento y riesgo para diferentes periodos
-    periodos = ['1m', '3m', '6m', '1y', 'YTD', '3y', '5y', '10y']
-    rendimientos = {}
-    riesgos = {}
+        # Calcular rendimiento y riesgo para diferentes periodos
+        periodos = ['1m', '3m', '6m', '1y', 'YTD', '3y', '5y', '10y']
+        rendimientos = {}
+        riesgos = {}
+        
+        for periodo in periodos:
+            rendimiento, riesgo = rendimiento_y_riesgo_por_periodo(precios_historicos, periodo)
+            rendimientos[periodo] = rendimiento
+            riesgos[periodo] = riesgo
+
+    else:
+        rendimiento_log_geom = None
+        riesgo_promedio = None
+        ratio_riesgo_rendimiento = None
+        rendimientos = {periodo: None for periodo in periodos}
+        riesgos = {periodo: None for periodo in periodos}
     
-    for periodo in periodos:
-        rendimiento, riesgo = rendimiento_y_riesgo_por_periodo(precios_historicos, periodo)
-        rendimientos[periodo] = rendimiento
-        riesgos[periodo] = riesgo
-else:
-    rendimiento_log_geom = None
-    riesgo_promedio = None
-    ratio_riesgo_rendimiento = None
-    rendimientos = {periodo: None for periodo in periodos}
-    riesgos = {periodo: None for periodo in periodos}
-    
-# Añadir la información a la lista de ETFs
+    # Añadir la información a la lista de ETFs
     ETFs_Data.append({
         "nombre": nombre,
         "simbolo": ticker,
@@ -296,14 +296,6 @@ else:
         "rendimientos": rendimientos,
         "riesgos": riesgos
     })
-
-# Cálculo de proyección de rendimiento
-valores = [aportacion_inicial]
-for i in range(anos_proyeccion):
-    nuevo_valor = valores[-1] * (1 + tasa_rendimiento)
-    valores.append(nuevo_valor)
-if not validar_aportacion_inicial(aportacion_inicial):
-    st.stop()
 
 # Mostrar resultados en tabla
 df_resultado = pd.DataFrame({"Año": list(range(anos_proyeccion + 1)), "Valor proyectado": valores})
