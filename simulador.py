@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import matplotlib.pyplot as plt
+import numpy as np
 
 # Título de la app
 st.title("Simulador OptiMaxx Patrimonial - Allianz")
