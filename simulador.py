@@ -104,7 +104,7 @@ portafolios_premier = [
 ]
 
 # Opción para elegir entre básico o premie
-tipo_portafolio = st.selectbox("Selecciona el tipo de portafolio", ["Básico", "Premium"])
+tipo_portafolio = st.selectbox("Selecciona el tipo de portafolio", ["Básico", "Premier"])
 
 # Mostrar los portafolios disponibles según la selección
 if tipo_portafolio == "Básico":
