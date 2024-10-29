@@ -66,13 +66,11 @@ if edad_proyecto > edad_maxima:
 st.header("Inversión Inicial")
 aportacion_inicial = st.number_input("Aportación inicial", min_value=1000.0, step=100.0)
 def validar_aportacion_inicial(aportacion_inicial):
-    if aportacion_inicial <= 0:
+    st stop()
+if aportacion_inicial <= 0:
         st.error("La aportación inicial debe ser un valor positivo.")
-        return False
-    return True
-
-# Número de años para proyectar
-anos_proyeccion = st.slider("Años de proyección", min_value=1, max_value=30, step=1)
+    return False
+return True
 
 # Lista de nombres de ETFs y sus símbolos
 etf_nombres = [
@@ -145,20 +143,10 @@ def obtener_data(ticker):
         info = accion.info
         nombre_corto = info.get('shortName', 'No disponible')
         descripcion_larga = info.get('longBusinessSummary', 'Descripción no disponible')
-        descripcion_traducida = traducir_texto(descripcion_larga)  # Traducir la descripción
         return nombre_corto, descripcion_traducida
     except Exception as e:
         print(f"Error al obtener datos para {ticker}: {e}")
         return 'No disponible', 'Descripción no disponible'
-
-def traducir_texto(texto):
-    """Traduce un texto al español utilizando Google Translate."""
-    try:
-        traduccion = translator.translate(texto, dest='es')
-        return traduccion.text
-    except Exception as e:
-        print(f"Error al traducir el texto: {e}")
-        return 'Traducción no disponible'
 
 def obtener_precio_actual(ticker):
     """Obtiene el precio de cierre más reciente de un ETF o acción dado su ticker."""
@@ -289,7 +277,7 @@ for nombre, ticker in zip(etf_nombres, etf_tickers):
     })
 
 # Mostrar resultados en tabla
-df_resultado = pd.DataFrame({"Año": list(range(anos_proyeccion + 1)), "Valor proyectado": valores})
+df_resultado = pd.DataFrame({"Año": list(range(anos_proyeccion + 1)), "Valor proyectado": rendimientos})
 st.write(df_resultado)
 
 # Suponiendo que df_resultado ya está definido
@@ -308,7 +296,7 @@ ax.plot(df_resultado["Año"], df_resultado["Valor proyectado"],
 # Etiquetas y título
 ax.set_xlabel("Año", fontsize=14)
 ax.set_ylabel("Valor Proyectado ($)", fontsize=14)
-ax.set_title(f"Proyección del Portafolio seleccionado: {portafolio_seleccionado}", fontsize=16)
+ax.set_title(f"Proyección del Portafolio seleccionado: {ticker}", fontsize=16)
 ax.legend()  # Agregar leyenda
 
 # Añadir cuadrícula
