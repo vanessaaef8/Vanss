@@ -6,32 +6,31 @@ import yfinance as yf
 from datetime import datetime, timedelta
 
 # Cambiar el fondo a una imagen y el color del texto
+# Cambiar el fondo a una imagen y el color del texto
 st.markdown(
     """
     <style>
-    /* Cambiar el fondo a una imagen y el color del texto */
-    .reportview-container {
-        background-image: url('https://blog.monex.com.mx/hs-fs/hubfs/C-3.jpg?width=900&height=599&name=C-3.jpg');
-        background-size: cover;
-        color: white;
+    .appview-container, .main {
+        background-image: url('https://blog.monex.com.mx/hs-fs/hubfs/C-3.jpg?width=900&height=599&name=C-3.jpg'); /* Cambia la URL por la de tu imagen */
+        background-size: cover; /* Asegura que la imagen cubra todo el fondo */
+        color: white; /* Color del texto */
     }
     .sidebar .sidebar-content {
-        background-color: rgba(0, 0, 0, 0.8);
-        color: white;
+        background-color: rgba(0, 0, 0, 0.8); /* Fondo oscuro y semitransparente para la barra lateral */
+        color: white; /* Color del texto de la barra lateral */
     }
     .stButton>button {
-        color: black;
-        background-color: white;
+        color: black; /* Color del texto del botón */
+        background-color: white; /* Fondo del botón */
     }
-    /* Cambiar el color de texto en la caja de selección */
-    .stSelectbox, .stSelectbox label, .stSelectbox div {
-        color: black !important;  /* Cambiar el color del texto a negro */
+    h1, h2, h3, h4, h5, h6, p, div, label {
+        color: white !important; /* Cambia el color del texto en encabezados y párrafos a blanco */
     }
     </style>
     """,
     unsafe_allow_html=True
 )
-   
+
 # Título de la app
 st.title("Simulador OptiMaxx Patrimonial - Allianz")
 
