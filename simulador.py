@@ -5,23 +5,6 @@ import numpy as np
 import yfinance as yf
 
 # Estilos CSS
-st.markdown(
-    """
-    <style>
-    .sidebar .sidebar-content {
-        background-color: rgba(0, 0, 0, 0.8);
-        color: white;
-    }
-    .stButton>button {
-        color: black;
-        background-color: white;
-    }
-    h1, h2, h3, h4, h5, h6, p, div, label {
-        color: white !important;
-    }
-    </style>
-    """, unsafe_allow_html=True
-)
 
 # Título de la app
 st.title("Simulador OptiMaxx Patrimonial - Allianz")
