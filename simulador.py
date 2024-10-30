@@ -25,6 +25,11 @@ st.markdown(
     h1, h2, h3, h4, h5, h6, p, div, label {
         color: white !important; /* Cambia el color del texto en encabezados y párrafos a blanco */
     }
+    <style>
+    /* Cambiar el color de texto en el selectbox */
+    .stSelectbox div[data-baseweb="select"] div {
+        color: black;
+    }
     </style>
     """,
     unsafe_allow_html=True
@@ -117,13 +122,12 @@ etf_seleccionado = st.selectbox("Selecciona un ETF para la inversión", etf_tick
 etf_nombre_seleccionado = etf_nombres[etf_tickers.index(etf_seleccionado)]
 
 # Parámetros de entrada
-aportacion_inicial = st.number_input("Aportación inicial en USD", min_value=1000.0, value=1000.0, step=500.0)
-anos_proyecto = st.slider("Número de años a proyectar", min_value=1, max_value=30, value=10)
+anos_proyecto = st.slider("Número de años a proyectar", min_value=1, max_value=30, step=1)
 
 # Función para descargar precios históricos y calcular la tasa de crecimiento anual promedio
 def obtener_tasa_anual_promedio(ticker):
     """Calcula la tasa anual de crecimiento promedio basada en los datos históricos."""
-    datos = yf.Ticker(ticker).history(period="10y")  # 10 años de datos
+    datos = yf.Ticker(ticker).history(period=anos_proyecto)  # 10 años de datos
     precios_inicio = datos['Close'][0]
     precios_fin = datos['Close'][-1]
     tasa_promedio = ((precios_fin / precios_inicio) ** (1 / 10)) - 1  # Tasa anual promedio
