@@ -112,72 +112,47 @@ etf_tickers = [
     "AGG"
 ]
 
-# Selector para que el usuario elija el ETF
-etf_seleccionado = st.selectbox("Selecciona un ETF para ver los precios históricos", etf_tickers)
+# Seleccionar ETF
+etf_seleccionado = st.selectbox("Selecciona un ETF para la inversión", etf_tickers)
 etf_nombre_seleccionado = etf_nombres[etf_tickers.index(etf_seleccionado)]
 
-# Función para descargar precios históricos
-def obtener_precios_historicos(ticker):
-    """Descarga los precios históricos de los últimos 5 años para un ETF dado."""
-    datos = yf.Ticker(ticker).history(period="5y")  # Cambia el periodo según sea necesario
-    return datos["Close"]  # Solo obtener el precio de cierre
+# Parámetros de entrada
+aportacion_inicial = st.number_input("Aportación inicial en USD", min_value=1000.0, value=1000.0, step=500.0)
+anos_proyecto = st.slider("Número de años a proyectar", min_value=1, max_value=30, value=10)
 
-# Obtener precios históricos del ETF seleccionado
-precios_historicos = obtener_precios_historicos(etf_seleccionado)
+# Función para descargar precios históricos y calcular la tasa de crecimiento anual promedio
+def obtener_tasa_anual_promedio(ticker):
+    """Calcula la tasa anual de crecimiento promedio basada en los datos históricos."""
+    datos = yf.Ticker(ticker).history(period="10y")  # 10 años de datos
+    precios_inicio = datos['Close'][0]
+    precios_fin = datos['Close'][-1]
+    tasa_promedio = ((precios_fin / precios_inicio) ** (1 / 10)) - 1  # Tasa anual promedio
+    return tasa_promedio
 
-# Generar la gráfica
-st.subheader(f"Precios Históricos del ETF: {etf_nombre_seleccionado}")
+# Calcular la tasa anual promedio
+tasa_anual = obtener_tasa_anual_promedio(etf_seleccionado)
+
+# Calcular proyección de inversión usando interés compuesto
+valor_final = aportacion_inicial * (1 + tasa_anual) ** anos_proyecto
+
+# Mostrar proyección y detalles al usuario
+st.subheader("Proyección de Inversión")
+st.write(f"Tasa de crecimiento anual promedio del ETF {etf_nombre_seleccionado}: {tasa_anual * 100:.2f}%")
+st.write(
+    f"Con una aportación inicial de ${aportacion_inicial:,.2f}, proyectando a {anos_proyecto} años, "
+    f"se estima que tu inversión alcanzará un valor de ${valor_final:,.2f}."
+)
+
+# Generar gráfica de crecimiento
+años = np.arange(1, anos_proyecto + 1)
+valores_proyectados = [aportacion_inicial * (1 + tasa_anual) ** i for i in años]
+
 fig, ax = plt.subplots(figsize=(10, 6))
-ax.plot(precios_historicos.index, precios_historicos.values, color='blue', linewidth=2)
-ax.set_title(f"Precio Histórico de {etf_nombre_seleccionado}")
-ax.set_xlabel("Fecha")
-ax.set_ylabel("Precio de Cierre ($)")
+ax.plot(años, valores_proyectados, color="green", marker="o")
+ax.set_title(f"Proyección de Crecimiento del ETF: {etf_nombre_seleccionado}")
+ax.set_xlabel("Años")
+ax.set_ylabel("Valor de Inversión ($)")
 ax.grid(True)
 
-# Mostrar la gráfica en Streamlit
+# Mostrar gráfica en Streamlit
 st.pyplot(fig)
-
-# Funciones para obtener datos y calcular rendimiento/riesgo...
-
-def obtener_fechas_ultimos_diez_anos():
-    """Obtiene las fechas de inicio y fin para los últimos 10 años."""
-    fecha_fin = datetime.now()
-    fecha_inicio = fecha_fin - timedelta(days=365 * 10)  # 10 años
-    return fecha_inicio.strftime("%Y-%m-%d"), fecha_fin.strftime("%Y-%m-%d")
-
-def descargar_datos_historicos(ticker):
-    """Descarga los precios históricos de los últimos 10 años para un ticker."""
-    fecha_inicio, fecha_fin = obtener_fechas_ultimos_diez_anos()
-    try:
-        accion = yf.Ticker(ticker)
-        datos = accion.history(start=fecha_inicio, end=fecha_fin)
-        return datos
-    except Exception as e:
-        print(f"Error al descargar datos para {ticker}: {e}")
-        return None
-
-# Descargar precios históricos para el ETF seleccionado
-precios_historicos = descargar_datos_historicos(selected_ticker)
-
-# Comprobar si se descargaron los precios
-if precios_historicos is not None and not precios_historicos.empty:
-    # Calcular el rendimiento y riesgo
-    rendimiento_log = np.log(precios_historicos['Close'].iloc[-1] / precios_historicos['Close'].iloc[0])
-    rendimiento_anualizado = rendimiento_log / (precios_historicos.shape[0] / 252)  # Ajustar por días de negociación
-
-# Proyección de valor a través de los años
-anos_proyeccion = edad_proyecto - edad
-valor_proyectado = []
-    
-for i in range(anos_proyeccion + 1):
-    valor = aportacion_inicial * (1 + rendimiento_anualizado) ** i
-    valor_proyectado.append(valor)
-    
-# Mostrar resultados en tabla
-df_resultado = pd.DataFrame({"Año": list(range(anos_proyeccion + 1)), "Valor proyectado": valor_proyectado})
-st.write(df_resultado)
-
-# Mensaje final personalizado
-valor_proyectado = [10000, 12000, 15000]  # Asegúrate de que esta variable esté definida correctamente
-st.success(f"{nombre} {apellido_paterno}, según el análisis, a los {edad_proyecto} años tendrás un valor estimado de inversión de ${valor_proyectado[-1]:,.2f} en el portafolio seleccionado.")
-
