@@ -24,12 +24,6 @@ st.markdown(
     }
     h1, h2, h3, h4, h5, h6, p, div, label {
         color: white !important; /* Cambia el color del texto en encabezados y párrafos a blanco */
-    }
-    <style>
-    /* Cambiar el color de texto en el selectbox */
-    .stSelectbox div[data-baseweb="select"] div {
-        color: black;
-    }
     </style>
     """,
     unsafe_allow_html=True
