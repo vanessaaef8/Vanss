@@ -40,7 +40,7 @@ etf_tickers = [
 etf_seleccionado = st.selectbox("Selecciona un ETF para la inversión", etf_tickers)
 etf_nombre_seleccionado = etf_nombres[etf_tickers.index(etf_seleccionado)]
 
-anos_proyecto = st.slider("Número de años a proyectar", min_value=1, max_value=30, step=1)
+anos_proyecto = st.slider("Número de años a proyectar", min_value=1, max_value=5, step=1)
 
 def obtener_tasa_anual_promedio(ticker, anos_proyecto):
     datos = yf.Ticker(ticker).history(period=f"{anos_proyecto}y")
