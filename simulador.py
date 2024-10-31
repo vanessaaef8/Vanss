@@ -37,8 +37,32 @@ etf_tickers = [
     "EWU", "EWY", "EZU", "EWJ", "EWC", "EWG", "EWA", "AGG"
 ]
 
+# Diccionario con descripciones de cada ETF
+etf_descripciones = {
+    "QQQ": "ETF de empresas tecnológicas que replican el índice NASDAQ 100.",
+    "SPY": "ETF que replica el índice S&P 500, compuesto por las 500 empresas más grandes de EE.UU.",
+    "DIA": "ETF que sigue el índice Dow Jones Industrial Average.",
+    "VWO": "ETF que invierte en mercados emergentes.",
+    "XLF": "ETF que sigue el sector financiero de Estados Unidos.",
+    "XLV": "ETF que representa el sector de salud de Estados Unidos.",
+    "ITB": "ETF enfocado en el sector de la construcción de viviendas en Estados Unidos.",
+    "SLV": "ETF respaldado por plata física.",
+    "EWT": "ETF que representa el mercado de valores de Taiwán.",
+    "EWU": "ETF que invierte en empresas del Reino Unido.",
+    "EWY": "ETF que invierte en empresas de Corea del Sur.",
+    "EZU": "ETF que sigue el índice MSCI EMU, que representa el mercado europeo.",
+    "EWJ": "ETF que invierte en el mercado japonés.",
+    "EWC": "ETF que representa el mercado canadiense.",
+    "EWG": "ETF que invierte en empresas de Alemania.",
+    "EWA": "ETF que invierte en el mercado australiano.",
+    "AGG": "ETF de bonos del mercado de renta fija de EE.UU."
+}
+
 etf_seleccionado = st.selectbox("Selecciona un ETF para la inversión", etf_tickers)
 etf_nombre_seleccionado = etf_nombres[etf_tickers.index(etf_seleccionado)]
+
+# Mostrar descripción del ETF seleccionado
+st.write(f"**Descripción del ETF seleccionado ({etf_nombre_seleccionado}):** {etf_descripciones.get(etf_seleccionado, 'Descripción no disponible.')}")
 
 anos_proyecto = st.slider("Número de años a proyectar", min_value=1, max_value=5, step=1)
 
