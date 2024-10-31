@@ -45,9 +45,9 @@ edad = st.number_input("Edad", min_value=18, max_value=150, step=1)
 # Validación de campos
 datos_completos = bool(nombre and apellido_paterno and edad)
 
-if datos_completos:
 # Menú de navegación en la barra lateral, aparece solo si se ingresan todos los datos
-opcion = st.sidebar.radio("Selecciona una sección", ("Inicio", "Proyección de Inversión"))
+if datos_completos:
+    st.sidebar.radio("Selecciona una sección", ("Inicio", "Proyección de Inversión"))
 
 # Sección de "Inicio"
 if opcion == "Inicio":
