@@ -149,11 +149,11 @@ escenario = st.selectbox("Selecciona un escenario", ["Optimista", "Esperado", "P
 
 # Definir tasas de crecimiento para cada escenario (valores ejemplo, ajusta según datos reales)
 if escenario == "Optimista":
-    tasa_anual = tasa_anual_base * 1.2  # 20% más alta
+    tasa_anual = tasa_anual * 1.2  # 20% más alta
 elif escenario == "Esperado":
-    tasa_anual = tasa_anual_base
+    tasa_anual = tasa_anual
 else:
-    tasa_anual = tasa_anual_base * 0.8  # 20% más baja
+    tasa_anual = tasa_anual * 0.8  # 20% más baja
 
 # Calcular proyecciones en base 100 para cada año
 años = np.arange(1, anos_proyecto + 1)
