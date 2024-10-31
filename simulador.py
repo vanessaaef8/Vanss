@@ -46,17 +46,17 @@ edad = st.number_input("Edad", min_value=18, max_value=150, step=1)
 datos_completos = bool(nombre and apellido_paterno and edad)
 
 if datos_completos:
-# Menú de navegación en la barra lateral, aparece solo si se ingresan todos los datos
-opcion = st.sidebar.radio("Selecciona una sección", ("Inicio", "Proyección de Inversión", "Ayuda"))
+    # Menú de navegación en la barra lateral, aparece solo si se ingresan todos los datos
+    opcion = st.sidebar.radio("Selecciona una sección", ("Inicio", "Proyección de Inversión", "Ayuda"))
 
-# Sección de "Inicio"
-if opcion == "Inicio":
-    st.title("Simulador OptiMaxx Patrimonial - Allianz")
-    st.write("¡Bienvenido! Configura tus datos para generar una proyección personalizada.")
+    # Sección de "Inicio"
+    if opcion == "Inicio":
+        st.title("Simulador OptiMaxx Patrimonial - Allianz")
+        st.write("¡Bienvenido! Configura tus datos para generar una proyección personalizada.")
 
-# Sección "Proyección de Inversión"
-if opcion == "Proyección de Inversión":
-    st.title("Proyección de Inversión")
+    # Sección "Proyección de Inversión"
+    elif opcion == "Proyección de Inversión":
+        st.title("Proyección de Inversión")
         
 etf_nombres = [
     "AZ QQQ NASDAQ 100", "AZ SPDR S&P 500 ETF TRUST", "AZ SPDR DJIA TRUST",
@@ -116,7 +116,7 @@ st.write(f"Tasa de crecimiento anual promedio del ETF {etf_nombre_seleccionado}:
 # Proyectar valores en base 100
 años = np.arange(1, anos_proyecto + 1)
 valores_proyectados = [100 * (1 + tasa_anual) ** i for i in años]  # Iniciando en 100
-
+        
 # Configuración del estilo de la gráfica
 plt.style.use('ggplot')
 fig, ax = plt.subplots(figsize=(10, 6))
@@ -169,9 +169,10 @@ ax.legend()
 # Mostrar gráfica
 st.pyplot(fig)
 
-# Sección "Ayuda"
-if opcion == "Ayuda":
-    st.title("Ayuda")
-    st.write("Si necesitas ayuda, comunícate al número de contacto.")
+
+    # Sección "Ayuda"
+    elif opcion == "Ayuda":
+        st.title("Ayuda")
+        st.write("Si necesitas ayuda, comunícate al número de contacto.")
 else:
     st.warning("Por favor, completa todos los campos de datos para continuar.")
