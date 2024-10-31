@@ -83,14 +83,58 @@ st.write(
     f"se estima que tu inversión alcanzará un valor de ${valor_final:,.2f}."
 )
 
+# Proyectar valores en base 100
 años = np.arange(1, anos_proyecto + 1)
-valores_proyectados = [aportacion_inicial * (1 + tasa_anual) ** i for i in años]
+valores_proyectados = [100 * (1 + tasa_anual) ** i for i in años]  # Iniciando en 100
 
+# Configuración del estilo de la gráfica
+plt.style.use('seaborn-darkgrid')
 fig, ax = plt.subplots(figsize=(10, 6))
-ax.plot(años, valores_proyectados, color="green", marker="o")
-ax.set_title(f"Proyección de Crecimiento del ETF: {etf_nombre_seleccionado}")
-ax.set_xlabel("Años")
-ax.set_ylabel("Valor de Inversión ($)")
-ax.grid(True)
+
+# Plot de los valores proyectados en base 100
+ax.plot(años, valores_proyectados, color="royalblue", marker="o", markersize=6, label="Proyección de Inversión")
+ax.axhline(100, color="grey", linestyle="--", linewidth=1, label="Base 100")  # Línea de referencia en base 100
+
+# Etiquetas y título
+ax.set_title(f"Proyección de Crecimiento del ETF: {etf_nombre_seleccionado} en Base 100", fontsize=16, fontweight="bold")
+ax.set_xlabel("Años", fontsize=12)
+ax.set_ylabel("Valor de Inversión (Base 100)", fontsize=12)
+ax.legend()
+
+# Mostrar gráfica en Streamlit
 st.pyplot(fig)
 
+# Título y entrada de años de proyección
+anos_proyecto = st.slider("Número de años a proyectar", min_value=1, max_value=30, step=1)
+
+# Opciones de escenarios de tasa de crecimiento anual
+escenario = st.selectbox("Selecciona un escenario", ["Optimista", "Esperado", "Pesimista"])
+
+# Definir tasas de crecimiento para cada escenario (valores ejemplo, ajusta según datos reales)
+if escenario == "Optimista":
+    tasa_anual = tasa_anual_base * 1.2  # 20% más alta
+elif escenario == "Esperado":
+    tasa_anual = tasa_anual_base
+else:
+    tasa_anual = tasa_anual_base * 0.8  # 20% más baja
+
+# Calcular proyecciones en base 100 para cada año
+años = np.arange(1, anos_proyecto + 1)
+valores_proyectados = [100 * (1 + tasa_anual) ** i for i in años]
+
+# Configuración de la gráfica
+plt.style.use("seaborn-darkgrid")
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Graficar proyección del escenario seleccionado
+ax.plot(años, valores_proyectados, marker="o", markersize=6, label=f"Escenario {escenario}", color="royalblue")
+ax.axhline(100, color="grey", linestyle="--", linewidth=1, label="Base 100")  # Línea de base
+
+# Personalizar gráfica
+ax.set_title(f"Proyección de Crecimiento - Escenario {escenario}", fontsize=16, fontweight="bold")
+ax.set_xlabel("Años", fontsize=12)
+ax.set_ylabel("Valor de Inversión (Base 100)", fontsize=12)
+ax.legend()
+
+# Mostrar gráfica
+st.pyplot(fig)
