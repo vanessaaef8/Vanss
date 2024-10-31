@@ -4,12 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import yfinance as yf
 
-import streamlit as st
-import pandas as pd
-import matplotlib.pyplot as plt
-import numpy as np
-import yfinance as yf
-
 # Configuración de la aplicación
 st.set_page_config(page_title="Simulador OptiMaxx Patrimonial", page_icon=":chart_with_upwards_trend:", layout="wide")
 
@@ -49,11 +43,11 @@ apellido_paterno = st.text_input("Apellido Paterno")
 edad = st.number_input("Edad", min_value=18, max_value=150, step=1)
 
 # Validación de campos
-datos_completos = nombre and apellido_paterno and edad
+datos_completos = bool(nombre and apellido_paterno and edad)
 
 if datos_completos:
-    # Menú de navegación en la barra lateral, aparece solo si se ingresan todos los datos
-    opcion = st.sidebar.radio("Selecciona una sección", ("Inicio", "Proyección de Inversión", "Ayuda"))
+# Menú de navegación en la barra lateral, aparece solo si se ingresan todos los datos
+opcion = st.sidebar.radio("Selecciona una sección", ("Inicio", "Proyección de Inversión", "Ayuda"))
 
 # Sección de "Inicio"
 if opcion == "Inicio":
@@ -63,7 +57,7 @@ if opcion == "Inicio":
 # Sección "Proyección de Inversión"
 if opcion == "Proyección de Inversión":
     st.title("Proyección de Inversión")
-
+        
 etf_nombres = [
     "AZ QQQ NASDAQ 100", "AZ SPDR S&P 500 ETF TRUST", "AZ SPDR DJIA TRUST",
     "AZ VANGUARD EMERGING MARKET ETF", "AZ FINANCIAL SELECT SECTOR SPDR",
