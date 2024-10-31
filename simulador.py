@@ -4,53 +4,14 @@ import matplotlib.pyplot as plt
 import numpy as np
 import yfinance as yf
 
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import yfinance as yf
+
 # Configuración de la aplicación
 st.set_page_config(page_title="Simulador OptiMaxx Patrimonial", page_icon=":chart_with_upwards_trend:", layout="wide")
-
-# Variable para verificar si los datos están completos
-datos_completos = False
-
-# Crear el menú de navegación en la barra lateral
-st.sidebar.title("Simulador OptiMaxx Patrimonial")
-st.sidebar.write("Navega entre las secciones para configurar y visualizar tu simulación.")
-opcion = st.sidebar.radio("Selecciona una sección", ("Inicio", "Proyección de Inversión", "Ayuda"))
-
-# Sección de "Inicio" para capturar los datos
-if opcion == "Inicio":
-    st.title("Simulador OptiMaxx Patrimonial - Allianz")
-    st.write("¡Bienvenido! Configura tus datos para generar una proyección personalizada.")
-# Datos del cliente
-with st.expander("Datos del Cliente"):
-    nombre = st.text_input("Nombre")
-    apellido_paterno = st.text_input("Apellido Paterno")
-    edad = st.number_input("Edad", min_value=18, max_value=150, step=1)
-    edad_proyecto = st.number_input("Edad a proyectar", min_value=edad, max_value=edad + 10, step=1)
-    aportacion_inicial = st.number_input("Aportación inicial", min_value=1000.0, step=100.0)
-
-# Verificación de que todos los datos se hayan ingresado
-if nombre and apellido_paterno and edad and edad_proyecto and aportacion_inicial:
-    datos_completos = True
-    st.success("Datos completos. Ahora puedes acceder a las otras secciones.")
-else:
-    st.warning("Por favor, completa todos los campos para continuar.")
-# Sección "Proyección de Inversión" (solo accesible si los datos están completos)
-if opcion == "Proyección de Inversión":
-    if not datos_completos:
-        st.warning("Por favor, completa los datos en la sección de Inicio antes de acceder a esta sección.")
-        st.stop()
-    else:
-        st.title("Proyección de Inversión")
-        # Aquí va el resto de tu código de proyección
-
-# Sección "Ayuda" (solo accesible si los datos están completos)
-if opcion == "Ayuda":
-    if not datos_completos:
-        st.warning("Por favor, completa los datos en la sección de Inicio antes de acceder a esta sección.")
-        st.stop()
-    else:
-        st.title("Ayuda")
-        st.write("Si necesitas ayuda, contacta a nuestro equipo de soporte.")
-        # Aquí va el resto del contenido de ayuda
 
 # Estilo CSS personalizado
 st.markdown(
@@ -77,6 +38,31 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
+
+# Sección de "Datos del Cliente"
+st.sidebar.title("Simulador OptiMaxx Patrimonial")
+st.sidebar.write("Por favor, ingresa tus datos para continuar.")
+
+# Crear campos de entrada para los datos del cliente
+nombre = st.text_input("Nombre")
+apellido_paterno = st.text_input("Apellido Paterno")
+edad = st.number_input("Edad", min_value=18, max_value=150, step=1)
+
+# Validación de campos
+datos_completos = nombre and apellido_paterno and edad
+
+if datos_completos:
+    # Menú de navegación en la barra lateral, aparece solo si se ingresan todos los datos
+    opcion = st.sidebar.radio("Selecciona una sección", ("Inicio", "Proyección de Inversión", "Ayuda"))
+
+# Sección de "Inicio"
+if opcion == "Inicio":
+    st.title("Simulador OptiMaxx Patrimonial - Allianz")
+    st.write("¡Bienvenido! Configura tus datos para generar una proyección personalizada.")
+
+# Sección "Proyección de Inversión"
+if opcion == "Proyección de Inversión":
+    st.title("Proyección de Inversión")
 
 etf_nombres = [
     "AZ QQQ NASDAQ 100", "AZ SPDR S&P 500 ETF TRUST", "AZ SPDR DJIA TRUST",
@@ -188,3 +174,10 @@ ax.legend()
 
 # Mostrar gráfica
 st.pyplot(fig)
+
+# Sección "Ayuda"
+if opcion == "Ayuda":
+    st.title("Ayuda")
+    st.write("Si necesitas ayuda, comunícate al número de contacto.")
+else:
+    st.warning("Por favor, completa todos los campos de datos para continuar.")
