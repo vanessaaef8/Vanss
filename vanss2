@@ -1,0 +1,97 @@
+import streamlit as st
+import pandas as pd
+import matplotlib.pyplot as plt
+import numpy as np
+import yfinance as yf
+
+# Configuración de la aplicación
+st.set_page_config(page_title="Simulador OptiMaxx Patrimonial", page_icon=":chart_with_upwards_trend:", layout="wide")
+
+# Estilo CSS personalizado
+st.markdown(
+    """
+    <style>
+    .appview-container, .main {
+        background-color: #E8F0FE; /* Fondo claro */
+        color: #1E3A8A; /* Color azul marino */
+    }
+    .sidebar .sidebar-content {
+        background-color: #1E3A8A; /* Fondo azul oscuro para la barra lateral */
+        color: white;
+    }
+    .stButton>button {
+        color: white;
+        background-color: #1E3A8A;
+        border-radius: 5px;
+    }
+    .stTitle, .stHeader, h1, h2, h3, h4, h5, h6, p, label {
+        color: #1E3A8A;
+        font-family: Arial, sans-serif;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Crear el menú de navegación en la barra lateral
+st.sidebar.title("Simulador OptiMaxx Patrimonial")
+st.sidebar.write("Navega entre las secciones para configurar y visualizar tu simulación.")
+opcion = st.sidebar.radio("Selecciona una sección", ("Inicio", "Proyección de Inversión", "Ayuda"))
+
+# Función para mostrar número de ayuda
+def mostrar_ayuda():
+    st.sidebar.write("**Contacto de ayuda**")
+    st.sidebar.write("Número de ayuda: +52 123 456 7890")
+
+# Sección de "Inicio"
+if opcion == "Inicio":
+    st.title("Simulador OptiMaxx Patrimonial - Allianz")
+    st.write("¡Bienvenido! Configura tus datos para generar una proyección personalizada.")
+
+    # Datos del cliente
+    st.subheader("Datos del Cliente")
+    nombre = st.text_input("Nombre")
+    apellido_paterno = st.text_input("Apellido Paterno")
+    
+    # Validación
+    if not nombre or not apellido_paterno:
+        st.warning("Por favor, completa todos los campos para continuar.")
+        st.stop()
+
+    edad = st.number_input("Edad", min_value=18, max_value=150, step=1)
+    edad_proyecto = st.number_input("Edad a proyectar", min_value=edad + 5, max_value=150, step=1)
+
+    # Inversión inicial
+    st.subheader("Inversión Inicial")
+    aportacion_inicial = st.number_input("Aportación inicial ($)", min_value=1000.0, step=100.0)
+
+# Sección "Proyección de Inversión"
+elif opcion == "Proyección de Inversión":
+    st.title("Proyección de Inversión")
+
+    # Selección de ETF
+    etf_tickers = ["QQQ", "SPY", "DIA"]
+    etf_nombres = ["AZ QQQ NASDAQ 100", "AZ SPDR S&P 500 ETF TRUST", "AZ SPDR DJIA TRUST"]
+    etf_seleccionado = st.selectbox("Selecciona un ETF", etf_tickers, format_func=lambda x: etf_nombres[etf_tickers.index(x)])
+    anos_proyecto = st.slider("Número de años a proyectar", min_value=1, max_value=30, step=1)
+
+    # Descargar datos y calcular proyección
+    ticker_data = yf.Ticker(etf_seleccionado)
+    precios = ticker_data.history(period=f"{anos_proyecto}y")["Close"]
+    rendimiento_base_100 = (precios / precios.iloc[0]) * 100
+
+    # Gráfica con estilo
+    fig, ax = plt.subplots(figsize=(10, 6))
+    ax.plot(rendimiento_base_100, color="#1E3A8A", marker="o")
+    ax.set_title(f"Proyección del ETF {etf_seleccionado} en Base 100", color="#1E3A8A", fontsize=16)
+    ax.set_xlabel("Fecha")
+    ax.set_ylabel("Valor de Inversión Base 100 ($)")
+    ax.grid(color='gray', linestyle='--', linewidth=0.5)
+    
+    # Mostrar gráfica
+    st.pyplot(fig)
+
+# Sección de "Ayuda"
+elif opcion == "Ayuda":
+    mostrar_ayuda()
+    st.write("Para cualquier pregunta, comunícate con el servicio de atención al cliente al número de ayuda.")
