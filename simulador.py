@@ -125,7 +125,7 @@ años = np.arange(1, anos_proyecto + 1)
 valores_proyectados = [100 * (1 + tasa_anual) ** i for i in años]  # Iniciando en 100
 
 # Configuración del estilo de la gráfica
-plt.style.use('seaborn-darkgrid')
+plt.style.use('ggplot')
 fig, ax = plt.subplots(figsize=(10, 6))
 
 # Plot de los valores proyectados en base 100
@@ -160,7 +160,7 @@ años = np.arange(1, anos_proyecto + 1)
 valores_proyectados = [100 * (1 + tasa_anual) ** i for i in años]
 
 # Configuración de la gráfica
-plt.style.use("seaborn-darkgrid")
+plt.style.use('ggplot')
 fig, ax = plt.subplots(figsize=(10, 6))
 
 # Graficar proyección del escenario seleccionado
