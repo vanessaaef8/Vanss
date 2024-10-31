@@ -47,7 +47,7 @@ datos_completos = bool(nombre and apellido_paterno and edad)
 
 # Menú de navegación en la barra lateral, aparece solo si se ingresan todos los datos
 if datos_completos:
-    st.sidebar.radio("Selecciona una sección", ("Inicio", "Proyección de Inversión"))
+    opcion == st.sidebar.radio("Selecciona una sección", ("Inicio", "Proyección de Inversión"))
 
 # Sección de "Inicio"
 if opcion == "Inicio":
