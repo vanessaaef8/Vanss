@@ -4,10 +4,44 @@ import matplotlib.pyplot as plt
 import numpy as np
 import yfinance as yf
 
-# Estilos CSS
+# Configuración de la aplicación
+st.set_page_config(page_title="Simulador OptiMaxx Patrimonial", page_icon=":chart_with_upwards_trend:", layout="wide")
 
-# Título de la app
-st.title("Simulador OptiMaxx Patrimonial - Allianz")
+# Estilo CSS personalizado
+st.markdown(
+    """
+    <style>
+    .appview-container, .main {
+        background-color: #E8F0FE; /* Fondo claro */
+        color: #1E3A8A; /* Color azul marino */
+    }
+    .sidebar .sidebar-content {
+        background-color: #1E3A8A; /* Fondo azul oscuro para la barra lateral */
+        color: white;
+    }
+    .stButton>button {
+        color: white;
+        background-color: #1E3A8A;
+        border-radius: 5px;
+    }
+    .stTitle, .stHeader, h1, h2, h3, h4, h5, h6, p, label {
+        color: #1E3A8A;
+        font-family: Arial, sans-serif;
+    }
+    </style>
+    """,
+    unsafe_allow_html=True
+)
+
+# Crear el menú de navegación en la barra lateral
+st.sidebar.title("Simulador OptiMaxx Patrimonial")
+st.sidebar.write("Navega entre las secciones para configurar y visualizar tu simulación.")
+opcion = st.sidebar.radio("Selecciona una sección", ("Inicio", "Proyección de Inversión", "Ayuda"))
+
+# Sección de "Inicio"
+if opcion == "Inicio":
+    st.title("Simulador OptiMaxx Patrimonial - Allianz")
+    st.write("¡Bienvenido! Configura tus datos para generar una proyección personalizada.")
 
 # Datos del cliente
 with st.expander("Datos del Cliente"):
@@ -19,9 +53,13 @@ with st.expander("Datos del Cliente"):
 
 edad = st.number_input("Edad", min_value=18, max_value=150, step=1)
 edad_maxima = 150
-edad_proyecto = st.number_input("Edad a proyectar", min_value=edad + 5, max_value=edad_maxima, step=1)
+edad_proyecto = st.number_input("Edad a proyectar", min_value=edad, max_value=edad+10, step=1)
 
 aportacion_inicial = st.number_input("Aportación inicial", min_value=1000.0, step=100.0)
+
+# Sección "Proyección de Inversión"
+elif opcion == "Proyección de Inversión":
+    st.title("Proyección de Inversión")
 
 etf_nombres = [
     "AZ QQQ NASDAQ 100", "AZ SPDR S&P 500 ETF TRUST", "AZ SPDR DJIA TRUST",
@@ -58,13 +96,12 @@ etf_descripciones = {
     "AGG": "ETF de bonos del mercado de renta fija de EE.UU."
 }
 
-etf_seleccionado = st.selectbox("Selecciona un ETF para la inversión", etf_tickers)
+etf_seleccionado = st.selectbox("Selecciona un ETF", etf_tickers, format_func=lambda x: etf_nombres[etf_tickers.index(x)])
+anos_proyecto = st.slider("Número de años a proyectar", min_value=1, max_value=10, step=1)
 etf_nombre_seleccionado = etf_nombres[etf_tickers.index(etf_seleccionado)]
 
 # Mostrar descripción del ETF seleccionado
 st.write(f"**Descripción del ETF seleccionado ({etf_nombre_seleccionado}):** {etf_descripciones.get(etf_seleccionado, 'Descripción no disponible.')}")
-
-anos_proyecto = st.slider("Número de años a proyectar", min_value=1, max_value=5, step=1)
 
 def obtener_tasa_anual_promedio(ticker, anos_proyecto):
     datos = yf.Ticker(ticker).history(period=f"{anos_proyecto}y")
