@@ -169,10 +169,9 @@ ax.legend()
 # Mostrar gráfica
 st.pyplot(fig)
 
-
-    # Sección "Ayuda"
-    elif opcion == "Ayuda":
-        st.title("Ayuda")
-        st.write("Si necesitas ayuda, comunícate al número de contacto.")
+# Sección "Ayuda"
+elif opcion == "Ayuda":
+    st.title("Ayuda")
+    st.write("Si necesitas ayuda, comunícate al número de contacto.")
 else:
     st.warning("Por favor, completa todos los campos de datos para continuar.")
