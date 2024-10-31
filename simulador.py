@@ -4,9 +4,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import yfinance as yf
 
-# Configuración de la aplicación
-st.set_page_config(page_title="Simulador OptiMaxx Patrimonial", page_icon=":chart_with_upwards_trend:", layout="wide")
-
 # Estilo CSS personalizado
 st.markdown(
     """
@@ -33,33 +30,55 @@ st.markdown(
     unsafe_allow_html=True
 )
 
+# Configuración de la aplicación
+st.set_page_config(page_title="Simulador OptiMaxx Patrimonial", page_icon=":chart_with_upwards_trend:", layout="wide")
+
+# Variable para verificar si los datos están completos
+datos_completos = False
+
 # Crear el menú de navegación en la barra lateral
 st.sidebar.title("Simulador OptiMaxx Patrimonial")
 st.sidebar.write("Navega entre las secciones para configurar y visualizar tu simulación.")
 opcion = st.sidebar.radio("Selecciona una sección", ("Inicio", "Proyección de Inversión", "Ayuda"))
 
-# Sección de "Inicio"
+# Sección de "Inicio" para capturar los datos
 if opcion == "Inicio":
     st.title("Simulador OptiMaxx Patrimonial - Allianz")
     st.write("¡Bienvenido! Configura tus datos para generar una proyección personalizada.")
 
-# Datos del cliente
-with st.expander("Datos del Cliente"):
-    nombre = st.text_input("Nombre")
-    apellido_paterno = st.text_input("Apellido Paterno")
-    if not nombre or not apellido_paterno:
-        st.warning("Por favor, completa todos los campos para continuar.")
-        st.stop()
+    # Datos del cliente
+    with st.expander("Datos del Cliente"):
+        nombre = st.text_input("Nombre")
+        apellido_paterno = st.text_input("Apellido Paterno")
+        edad = st.number_input("Edad", min_value=18, max_value=150, step=1)
+        edad_proyecto = st.number_input("Edad a proyectar", min_value=edad, max_value=edad + 10, step=1)
+        aportacion_inicial = st.number_input("Aportación inicial", min_value=1000.0, step=100.0)
 
-edad = st.number_input("Edad", min_value=18, max_value=150, step=1)
-edad_maxima = 150
-edad_proyecto = st.number_input("Edad a proyectar", min_value=edad, max_value=edad+10, step=1)
+        # Verificación de que todos los datos se hayan ingresado
+        if nombre and apellido_paterno and edad and edad_proyecto and aportacion_inicial:
+            datos_completos = True
+            st.success("Datos completos. Ahora puedes acceder a las otras secciones.")
+        else:
+            st.warning("Por favor, completa todos los campos para continuar.")
 
-aportacion_inicial = st.number_input("Aportación inicial", min_value=1000.0, step=100.0)
-
-# Sección "Proyección de Inversión"
+# Sección "Proyección de Inversión" (solo accesible si los datos están completos)
 if opcion == "Proyección de Inversión":
-    st.title("Proyección de Inversión")
+    if not datos_completos:
+        st.warning("Por favor, completa los datos en la sección de Inicio antes de acceder a esta sección.")
+        st.stop()
+    else:
+        st.title("Proyección de Inversión")
+        # Aquí va el resto de tu código de proyección
+
+# Sección "Ayuda" (solo accesible si los datos están completos)
+if opcion == "Ayuda":
+    if not datos_completos:
+        st.warning("Por favor, completa los datos en la sección de Inicio antes de acceder a esta sección.")
+        st.stop()
+    else:
+        st.title("Ayuda")
+        st.write("Si necesitas ayuda, contacta a nuestro equipo de soporte.")
+        # Aquí va el resto del contenido de ayuda
 
     etf_nombres = [
     "AZ QQQ NASDAQ 100", "AZ SPDR S&P 500 ETF TRUST", "AZ SPDR DJIA TRUST",
