@@ -135,7 +135,7 @@ ax.set_ylabel("Valor de Inversión (Base 100)", fontsize=12)
 ax.legend()
 
 # Mostrar gráfica en Streamlit
-st.pyplot(fig)
+    st.pyplot(fig)
 else:
     st.error("No se pudo obtener la tasa de crecimiento. Verifica el ticker o el periodo seleccionado.")
 
