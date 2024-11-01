@@ -113,28 +113,28 @@ aportacion_inicial = 10000  # Ejemplo de valor
 if tasa_anual is not None:
     valor_final = aportacion_inicial * (1 + tasa_anual) ** anos_proyecto
     
-st.subheader("Proyección de Inversión")
-st.write(f"Tasa de crecimiento anual promedio del ETF {etf_nombre_seleccionado}: {tasa_anual * 100:.2f}%")
+    st.subheader("Proyección de Inversión")
+    st.write(f"Tasa de crecimiento anual promedio del ETF {etf_nombre_seleccionado}: {tasa_anual * 100:.2f}%")
 
-# Proyectar valores en base 100
-años = np.arange(1, anos_proyecto + 1)
-valores_proyectados = [100 * (1 + tasa_anual) ** i for i in años]  # Iniciando en 100
-        
-# Configuración del estilo de la gráfica
-plt.style.use('ggplot')
-fig, ax = plt.subplots(figsize=(10, 6))
+    # Proyectar valores en base 100
+    años = np.arange(1, anos_proyecto + 1)
+    valores_proyectados = [100 * (1 + tasa_anual) ** i for i in años]  # Iniciando en 100
+            
+    # Configuración del estilo de la gráfica
+    plt.style.use('ggplot')
+    fig, ax = plt.subplots(figsize=(10, 6))
+    
+    # Plot de los valores proyectados en base 100
+    ax.plot(años, valores_proyectados, color="royalblue", marker="o", markersize=6, label="Proyección de Inversión")
+    ax.axhline(100, color="grey", linestyle="--", linewidth=1, label="Base 100")  # Línea de referencia en base 100
 
-# Plot de los valores proyectados en base 100
-ax.plot(años, valores_proyectados, color="royalblue", marker="o", markersize=6, label="Proyección de Inversión")
-ax.axhline(100, color="grey", linestyle="--", linewidth=1, label="Base 100")  # Línea de referencia en base 100
-
-# Etiquetas y título
-ax.set_title(f"Proyección de Crecimiento del ETF: {etf_nombre_seleccionado} en Base 100", fontsize=16, fontweight="bold")
-ax.set_xlabel("Años", fontsize=12)
-ax.set_ylabel("Valor de Inversión (Base 100)", fontsize=12)
-ax.legend()
-
-# Mostrar gráfica en Streamlit
+    # Etiquetas y título
+    ax.set_title(f"Proyección de Crecimiento del ETF: {etf_nombre_seleccionado} en Base 100", fontsize=16, fontweight="bold")
+    ax.set_xlabel("Años", fontsize=12)
+    ax.set_ylabel("Valor de Inversión (Base 100)", fontsize=12)
+    ax.legend()
+    
+    # Mostrar gráfica en Streamlit
     st.pyplot(fig)
 else:
     st.error("No se pudo obtener la tasa de crecimiento. Verifica el ticker o el periodo seleccionado.")
