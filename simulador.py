@@ -94,7 +94,7 @@ etf_descripciones = {
 }
 
 etf_seleccionado = st.selectbox("Selecciona un ETF", etf_tickers, format_func=lambda x: etf_nombres[etf_tickers.index(x)])
-anos_proyecto = st.slider("Número de años a proyectar", min_value=1, max_value=10, step=1)
+anos_proyecto = st.slider("Número de años a proyectar", min_value=1, max_value=5, step=1)
 etf_nombre_seleccionado = etf_nombres[etf_tickers.index(etf_seleccionado)]
 
 # Mostrar descripción del ETF seleccionado
