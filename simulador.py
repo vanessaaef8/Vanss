@@ -168,3 +168,4 @@ ax.legend()
 
 # Mostrar gráfica
 st.pyplot(fig)
+
