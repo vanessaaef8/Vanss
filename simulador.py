@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import yfinance as yf
 
+
 # Configuración de la aplicación
 st.set_page_config(page_title="Simulador OptiMaxx Patrimonial", page_icon=":chart_with_upwards_trend:", layout="wide")
 
