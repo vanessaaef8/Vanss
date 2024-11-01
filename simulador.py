@@ -47,15 +47,15 @@ datos_completos = bool(nombre and apellido_paterno and edad)
 
 # Menú de navegación en la barra lateral, aparece solo si se ingresan todos los datos
 if datos_completos:
-    opcion == st.sidebar.radio("Selecciona una sección", ("Inicio", "Proyección de Inversión"))
+    opcion = st.sidebar.radio("Selecciona una sección", ("Inicio", "Proyección de Inversión"))
 
 # Sección de "Inicio"
-if opcion == "Inicio":
+if opcion = "Inicio":
     st.title("Simulador OptiMaxx Patrimonial - Allianz")
     st.write("¡Bienvenido! Configura tus datos para generar una proyección personalizada.")
 
 # Sección "Proyección de Inversión"
-elif opcion == "Proyección de Inversión":
+elif opcion = "Proyección de Inversión":
     st.title("Proyección de Inversión")
         
 etf_nombres = [
@@ -141,9 +141,9 @@ anos_proyecto = st.slider("Número de años a proyectar", min_value=1, max_value
 escenario = st.selectbox("Selecciona un escenario", ["Optimista", "Esperado", "Pesimista"])
 
 # Definir tasas de crecimiento para cada escenario (valores ejemplo, ajusta según datos reales)
-if escenario == "Optimista":
+if escenario = "Optimista":
     tasa_anual = tasa_anual * 1.2  # 20% más alta
-elif escenario == "Esperado":
+elif escenario = "Esperado":
     tasa_anual = tasa_anual
 else:
     tasa_anual = tasa_anual * 0.8  # 20% más baja
