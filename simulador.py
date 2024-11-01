@@ -110,8 +110,9 @@ def obtener_tasa_anual_promedio(ticker, anos_proyecto):
 tasa_anual = obtener_tasa_anual_promedio(etf_seleccionado, anos_proyecto)
 
 aportacion_inicial = 10000  # Ejemplo de valor
-valor_final = aportacion_inicial * (1 + tasa_promedio) ** anos_proyecto
-
+if tasa_anual is not None:
+    valor_final = aportacion_inicial * (1 + tasa_anual) ** anos_proyecto
+    
 st.subheader("Proyección de Inversión")
 st.write(f"Tasa de crecimiento anual promedio del ETF {etf_nombre_seleccionado}: {tasa_anual * 100:.2f}%")
 
@@ -135,9 +136,8 @@ ax.legend()
 
 # Mostrar gráfica en Streamlit
 st.pyplot(fig)
-
-# Título y entrada de años de proyección
-anos_proyecto = st.slider("Número de años a proyectar", min_value=1, max_value=30, step=1)
+else:
+    st.error("No se pudo obtener la tasa de crecimiento. Verifica el ticker o el periodo seleccionado.")
 
 # Opciones de escenarios de tasa de crecimiento anual
 escenario = st.selectbox("Selecciona un escenario", ["Optimista", "Esperado", "Pesimista"])
