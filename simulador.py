@@ -141,7 +141,7 @@ anos_proyecto = st.slider("Número de años a proyectar", min_value=1, max_value
 escenario = st.selectbox("Selecciona un escenario", ["Optimista", "Esperado", "Pesimista"])
 
 # Definir tasas de crecimiento para cada escenario (valores ejemplo, ajusta según datos reales)
-if escenario = "Optimista":
+if escenario == "Optimista":
     tasa_anual = tasa_anual * 1.2  # 20% más alta
 elif escenario = "Esperado":
     tasa_anual = tasa_anual
