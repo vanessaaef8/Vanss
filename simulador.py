@@ -55,7 +55,7 @@ if opcion == "Inicio":
     st.write("¡Bienvenido! Configura tus datos para generar una proyección personalizada.")
 
 # Sección "Proyección de Inversión"
-elif opcion = "Proyección de Inversión":
+elif opcion == "Proyección de Inversión":
     st.title("Proyección de Inversión")
         
 etf_nombres = [
