@@ -108,7 +108,9 @@ def obtener_tasa_anual_promedio(ticker, anos_proyecto):
     return tasa_promedio
 
 tasa_anual = obtener_tasa_anual_promedio(etf_seleccionado, anos_proyecto)
-valor_final = aportacion_inicial * (1 + tasa_anual) ** anos_proyecto
+
+aportacion_inicial = 10000  # Ejemplo de valor
+valor_final = aportacion_inicial * (1 + tasa_promedio) ** anos_proyecto
 
 st.subheader("Proyección de Inversión")
 st.write(f"Tasa de crecimiento anual promedio del ETF {etf_nombre_seleccionado}: {tasa_anual * 100:.2f}%")
