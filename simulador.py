@@ -45,6 +45,9 @@ edad = st.number_input("Edad", min_value=18, max_value=150, step=1)
 # Validación de campos
 datos_completos = bool(nombre and apellido_paterno and edad)
 
+# Inicializar opcion
+opcion = None
+
 # Menú de navegación en la barra lateral, aparece solo si se ingresan todos los datos
 if datos_completos:
     opcion = st.sidebar.radio("Selecciona una sección", ("Inicio", "Proyección de Inversión"))
@@ -101,12 +104,16 @@ etf_nombre_seleccionado = etf_nombres[etf_tickers.index(etf_seleccionado)]
 st.write(f"**Descripción del ETF seleccionado ({etf_nombre_seleccionado}):** {etf_descripciones.get(etf_seleccionado, 'Descripción no disponible.')}")
 
 def obtener_tasa_anual_promedio(ticker, anos_proyecto):
-    datos = yf.Ticker(ticker).history(period=f"{anos_proyecto}y")
-    precios_inicio = datos['Close'][0]
-    precios_fin = datos['Close'][-1]
-    tasa_promedio = ((precios_fin / precios_inicio) ** (1 / anos_proyecto)) - 1
-    return tasa_promedio
-
+    try:
+        datos = yf.Ticker(ticker).history(period=f"{anos_proyecto}y")
+        precios_inicio = datos['Close'][0]
+        precios_fin = datos['Close'][-1]
+        tasa_promedio = ((precios_fin / precios_inicio) ** (1 / anos_proyecto)) - 1
+        return tasa_promedio
+    except Exception as e:
+        st.error(f"No se pudo obtener datos para el ticker {ticker}. Error: {str(e)}")
+        return None
+        
 tasa_anual = obtener_tasa_anual_promedio(etf_seleccionado, anos_proyecto)
 
 aportacion_inicial = 10000  # Ejemplo de valor
