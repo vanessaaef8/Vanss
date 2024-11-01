@@ -50,7 +50,7 @@ if datos_completos:
     opcion = st.sidebar.radio("Selecciona una sección", ("Inicio", "Proyección de Inversión"))
 
 # Sección de "Inicio"
-if opcion = "Inicio":
+if opcion == "Inicio":
     st.title("Simulador OptiMaxx Patrimonial - Allianz")
     st.write("¡Bienvenido! Configura tus datos para generar una proyección personalizada.")
 
