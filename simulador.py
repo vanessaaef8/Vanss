@@ -155,7 +155,7 @@ with tab2:
 
             # Calcular proyecciones en base 100 para cada año
             años = np.arange(1, anos_proyecto + 1)
-            valores_proyectados = [100 * (1 + tasa_anual_ajustada) ** i for i in años]
+            valores_proyectados_escenario = [100 * (1 + tasa_anual_ajustada) ** i for i in años]
 
             # Configuración de la gráfica
             plt.style.use('ggplot')
