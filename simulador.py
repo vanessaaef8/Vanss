@@ -140,11 +140,8 @@ with tab2:
             st.pyplot(fig)
         else:
             st.error("No se pudo obtener la tasa de crecimiento. Verifica el ticker o el periodo seleccionado.")
-    else:
-        st.error("Por favor completa los datos del cliente en la pestaña 'Datos del Cliente'.")
-
-# Opciones de escenarios de tasa de crecimiento anual
-if tasa_anual is not None:
+    # Opciones de escenarios de tasa de crecimiento anual
+    if tasa_anual is not None:
     escenario = st.selectbox("Selecciona un escenario", ["Optimista", "Esperado", "Pesimista"])
 
     # Definir tasas de crecimiento para cada escenario (valores ejemplo, ajusta según datos reales)
@@ -175,6 +172,4 @@ if tasa_anual is not None:
 
     # Mostrar gráfica
     st.pyplot(fig)
-else:
-    st.error("No se pudo calcular la tasa anual. Verifica los datos o selecciona un ETF válido.")
 
