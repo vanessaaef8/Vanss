@@ -116,31 +116,29 @@ def obtener_tasa_anual_promedio(ticker, anos_proyecto):
         
 tasa_anual = obtener_tasa_anual_promedio(etf_seleccionado, anos_proyecto)
 
-aportacion_inicial = 10000  # Ejemplo de valor
-if tasa_anual is not None:
-    valor_final = aportacion_inicial * (1 + tasa_anual) ** anos_proyecto
-    
-    st.subheader("Proyección de Inversión")
-    st.write(f"Tasa de crecimiento anual promedio del ETF {etf_nombre_seleccionado}: {tasa_anual * 100:.2f}%")
+# Campo de entrada para el monto de inversión inicial
+aportacion_inicial = st.number_input("Monto de inversión inicial ($)", min_value=1, step=1000)
 
-    # Proyectar valores en base 100
+# Verificamos que la tasa anual sea válida antes de proceder
+if tasa_anual is not None:
+    # Calculamos el valor final de la inversión
+    valor_final = aportacion_inicial * (1 + tasa_anual) ** anos_proyecto
+    st.write(f"**Valor final de la inversión después de {anos_proyecto} años:** ${valor_final:,.2f}")
+    
+    # Calculamos los valores proyectados basados en el monto inicial
     años = np.arange(1, anos_proyecto + 1)
-    valores_proyectados = [100 * (1 + tasa_anual) ** i for i in años]  # Iniciando en 100
-            
-    # Configuración del estilo de la gráfica
+    valores_proyectados = [aportacion_inicial * (1 + tasa_anual) ** i for i in años]
+
+    # Configuración de la gráfica para mostrar la inversión proyectada
     plt.style.use('ggplot')
     fig, ax = plt.subplots(figsize=(10, 6))
-    
-    # Plot de los valores proyectados en base 100
-    ax.plot(años, valores_proyectados, color="royalblue", marker="o", markersize=6, label="Proyección de Inversión")
-    ax.axhline(100, color="grey", linestyle="--", linewidth=1, label="Base 100")  # Línea de referencia en base 100
 
-    # Etiquetas y título
-    ax.set_title(f"Proyección de Crecimiento del ETF: {etf_nombre_seleccionado} en Base 100", fontsize=16, fontweight="bold")
+    ax.plot(años, valores_proyectados, color="royalblue", marker="o", markersize=6, label="Proyección de Inversión")
+    ax.set_title(f"Proyección de Crecimiento del ETF: {etf_nombre_seleccionado}", fontsize=16, fontweight="bold")
     ax.set_xlabel("Años", fontsize=12)
-    ax.set_ylabel("Valor de Inversión (Base 100)", fontsize=12)
+    ax.set_ylabel("Valor de Inversión ($)", fontsize=12)
     ax.legend()
-    
+
     # Mostrar gráfica en Streamlit
     st.pyplot(fig)
 else:
