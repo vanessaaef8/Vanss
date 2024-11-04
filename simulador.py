@@ -160,7 +160,21 @@ with tab2:
             # Configuración de la gráfica
             plt.style.use('ggplot')
             fig, ax = plt.subplots(figsize=(10, 6))
-
+            
             # Graficar proyección del escenario seleccionado
-            ax.plot(años, valores_proyectados_escenario, marker="o", markersize=6, label=f"Escenario {escenario}", color="royalblue")
-            ax.axhline
+            ax.plot(años, valores_proyectados_escenario, color="orange", marker="o", markersize=6, label=f"Escenario {escenario}")
+            ax.axhline(100, color="grey", linestyle="--", linewidth=1, label="Base 100")
+            
+            # Personalizar gráfica
+            ax.set_title(f"Proyección de Crecimiento - Escenario {escenario}", fontsize=16, fontweight="bold")
+            ax.set_xlabel("Años", fontsize=12)
+            ax.set_ylabel("Valor de Inversión (Base 100)", fontsize=12)
+            ax.legend()
+            ax.grid(True)
+
+            # Mostrar gráfica en Streamlit
+            st.pyplot(fig)
+
+            # Botón de ayuda en la barra lateral
+            st.sidebar.header("Ayuda")
+            st.sidebar.write("Para más información, contacta a nuestro número de ayuda: 800-123-4567")
