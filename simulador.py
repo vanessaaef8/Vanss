@@ -144,33 +144,37 @@ with tab2:
         st.error("Por favor completa los datos del cliente en la pestaña 'Datos del Cliente'.")
 
 # Opciones de escenarios de tasa de crecimiento anual
+if tasa_anual is not None:
     escenario = st.selectbox("Selecciona un escenario", ["Optimista", "Esperado", "Pesimista"])
-    
+
     # Definir tasas de crecimiento para cada escenario (valores ejemplo, ajusta según datos reales)
     if escenario == "Optimista":
-        tasa_anual = tasa_anual * 1.2  # 20% más alta
+        tasa_anual_ajustada = tasa_anual * 1.2  # 20% más alta
     elif escenario == "Esperado":
-        tasa_anual = tasa_anual
+        tasa_anual_ajustada = tasa_anual
     else:
-        tasa_anual = tasa_anual * 0.8  # 20% más baja
-    
+        tasa_anual_ajustada = tasa_anual * 0.8  # 20% más baja
+
     # Calcular proyecciones en base 100 para cada año
     años = np.arange(1, anos_proyecto + 1)
-    valores_proyectados = [100 * (1 + tasa_anual) ** i for i in años]
-    
+    valores_proyectados = [100 * (1 + tasa_anual_ajustada) ** i for i in años]
+
     # Configuración de la gráfica
     plt.style.use('ggplot')
     fig, ax = plt.subplots(figsize=(10, 6))
-    
+
     # Graficar proyección del escenario seleccionado
     ax.plot(años, valores_proyectados, marker="o", markersize=6, label=f"Escenario {escenario}", color="royalblue")
     ax.axhline(100, color="grey", linestyle="--", linewidth=1, label="Base 100")  # Línea de base
-    
+
     # Personalizar gráfica
     ax.set_title(f"Proyección de Crecimiento - Escenario {escenario}", fontsize=16, fontweight="bold")
     ax.set_xlabel("Años", fontsize=12)
     ax.set_ylabel("Valor de Inversión (Base 100)", fontsize=12)
     ax.legend()
-    
+
     # Mostrar gráfica
     st.pyplot(fig)
+else:
+    st.error("No se pudo calcular la tasa anual. Verifica los datos o selecciona un ETF válido.")
+
