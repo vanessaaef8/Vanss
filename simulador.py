@@ -49,7 +49,7 @@ with tab1:
     # Validación de campos
     datos_completos = bool(nombre and apellido_paterno and edad)
 
-# Inicializar opcion
+# Inicializar opción
 opcion = None
 
 # Pestaña de "Proyección de Inversión"
@@ -99,7 +99,7 @@ with tab2:
         
         # Mostrar descripción del ETF seleccionado
         st.write(f"**Descripción del ETF seleccionado ({etf_nombre_seleccionado}):** {etf_descripciones.get(etf_seleccionado, 'Descripción no disponible.')}")
-        
+
         def obtener_tasa_anual_promedio(ticker, anos_proyecto):
             try:
                 datos = yf.Ticker(ticker).history(period=f"{anos_proyecto}y")
@@ -140,36 +140,30 @@ with tab2:
             st.pyplot(fig)
         else:
             st.error("No se pudo obtener la tasa de crecimiento. Verifica el ticker o el periodo seleccionado.")
-    # Opciones de escenarios de tasa de crecimiento anual
-    if tasa_anual is not None:
-    escenario = st.selectbox("Selecciona un escenario", ["Optimista", "Esperado", "Pesimista"])
+        
+        # Opciones de escenarios de tasa de crecimiento anual
+        if tasa_anual is not None:
+            escenario = st.selectbox("Selecciona un escenario", ["Optimista", "Esperado", "Pesimista"])
 
-    # Definir tasas de crecimiento para cada escenario (valores ejemplo, ajusta según datos reales)
-    if escenario == "Optimista":
-        tasa_anual_ajustada = tasa_anual * 1.2  # 20% más alta
-    elif escenario == "Esperado":
-        tasa_anual_ajustada = tasa_anual
-    else:
-        tasa_anual_ajustada = tasa_anual * 0.8  # 20% más baja
+            # Definir tasas de crecimiento para cada escenario (valores ejemplo, ajusta según datos reales)
+            if escenario == "Optimista":
+                tasa_anual_ajustada = tasa_anual * 1.2  # 20% más alta
+            elif escenario == "Esperado":
+                tasa_anual_ajustada = tasa_anual
+            else:
+                tasa_anual_ajustada = tasa_anual * 0.8  # 20% más baja
 
-    # Calcular proyecciones en base 100 para cada año
-    años = np.arange(1, anos_proyecto + 1)
-    valores_proyectados = [100 * (1 + tasa_anual_ajustada) ** i for i in años]
+            # Calcular proyecciones en base 100 para cada año
+            años = np.arange(1, anos_proyecto + 1)
+            valores_proyectados = [100 * (1 + tasa_anual_ajustada) ** i for i in años]
 
-    # Configuración de la gráfica
-    plt.style.use('ggplot')
-    fig, ax = plt.subplots(figsize=(10, 6))
+            # Configuración de la gráfica
+            plt.style.use('ggplot')
+            fig, ax = plt.subplots(figsize=(10, 6))
 
-    # Graficar proyección del escenario seleccionado
-    ax.plot(años, valores_proyectados, marker="o", markersize=6, label=f"Escenario {escenario}", color="royalblue")
-    ax.axhline(100, color="grey", linestyle="--", linewidth=1, label="Base 100")  # Línea de base
+            # Graficar proyección del escenario seleccionado
+            ax.plot(años, valores_proyectados, marker="o", markersize=6, label=f"Escenario {escenario}", color="royalblue")
+            ax.axhline(100, color="grey", linestyle="--", linewidth=1, label="Base 100")  # Línea de base
 
-    # Personalizar gráfica
-    ax.set_title(f"Proyección de Crecimiento - Escenario {escenario}", fontsize=16, fontweight="bold")
-    ax.set_xlabel("Años", fontsize=12)
-    ax.set_ylabel("Valor de Inversión (Base 100)", fontsize=12)
-    ax.legend()
-
-    # Mostrar gráfica
-    st.pyplot(fig)
-
+            # Personalizar gráfica
+            ax.set_title(f"Proyección de Crecimiento
