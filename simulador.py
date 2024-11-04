@@ -162,7 +162,7 @@ with tab2:
             fig, ax = plt.subplots(figsize=(10, 6))
             
             # Graficar proyección del escenario seleccionado
-            ax.plot(años, valores_proyectados_escenario, color="orange", marker="o", markersize=6, label=f"Escenario {escenario}")
+            ax.plot(años, valores_proyectados_escenario, color="black", marker="o", markersize=6, label=f"Escenario {escenario}")
             ax.axhline(100, color="grey", linestyle="--", linewidth=1, label="Base 100")
             
             # Personalizar gráfica
