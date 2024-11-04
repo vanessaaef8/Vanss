@@ -117,7 +117,7 @@ def obtener_tasa_anual_promedio(ticker, anos_proyecto):
 tasa_anual = obtener_tasa_anual_promedio(etf_seleccionado, anos_proyecto)
 
 # Campo de entrada para el monto de inversión inicial
-aportacion_inicial = st.number_input("Monto de inversión inicial ($)", min_value=1, step=1000)
+aportacion_inicial = st.number_input("Monto de inversión inicial ($)", min_value=10000, step=1)
 
 # Verificamos que la tasa anual sea válida antes de proceder
 if tasa_anual is not None:
