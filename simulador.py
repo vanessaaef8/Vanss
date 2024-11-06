@@ -44,46 +44,44 @@ with tab1:
     apellido_paterno = st.text_input("Apellido Paterno")
     edad = st.number_input("Edad", min_value=18, max_value=150, step=1)
 
-# Validación de campos
+    # Validación de campos
     datos_completos = bool(nombre and apellido_paterno and edad)
 
-# Inicializar opción
-opcion = None
-
+# Definición de ETFs
 etf_nombres = [
-            "AZ QQQ NASDAQ 100", "AZ SPDR S&P 500 ETF TRUST", "AZ SPDR DJIA TRUST",
-            "AZ VANGUARD EMERGING MARKET ETF", "AZ FINANCIAL SELECT SECTOR SPDR",
-            "AZ HEALTH CARE SELECT SECTOR", "AZ DJ US HOME CONSTRUCT", "AZ SILVER TRUST",
-            "AZ MSCI TAIWAN INDEX FD", "AZ MSCI UNITED KINGDOM", "AZ MSCI SOUTH KOREA IND",
-            "AZ MSCI EMU", "AZ MSCI JAPAN INDEX FD", "AZ MSCI CANADA", "AZ MSCI GERMANY INDEX",
-            "AZ MSCI AUSTRALIA INDEX", "AZ BARCLAYS AGGREGATE"
-        ]
-        
-        etf_tickers = [
-            "QQQ", "SPY", "DIA", "VWO", "XLF", "XLV", "ITB", "SLV", "EWT",
-            "EWU", "EWY", "EZU", "EWJ", "EWC", "EWG", "EWA", "AGG"
-        ]
-        
-        # Diccionario con descripciones de cada ETF
-        etf_descripciones = {
-            "QQQ": "ETF de empresas tecnológicas que replican el índice NASDAQ 100.",
-            "SPY": "ETF que replica el índice S&P 500, compuesto por las 500 empresas más grandes de EE.UU.",
-            "DIA": "ETF que sigue el índice Dow Jones Industrial Average.",
-            "VWO": "ETF que invierte en mercados emergentes.",
-            "XLF": "ETF que sigue el sector financiero de Estados Unidos.",
-            "XLV": "ETF que representa el sector de salud de Estados Unidos.",
-            "ITB": "ETF enfocado en el sector de la construcción de viviendas en Estados Unidos.",
-            "SLV": "ETF respaldado por plata física.",
-            "EWT": "ETF que representa el mercado de valores de Taiwán.",
-            "EWU": "ETF que invierte en empresas del Reino Unido.",
-            "EWY": "ETF que invierte en empresas de Corea del Sur.",
-            "EZU": "ETF que sigue el índice MSCI EMU, que representa el mercado europeo.",
-            "EWJ": "ETF que invierte en el mercado japonés.",
-            "EWC": "ETF que representa el mercado canadiense.",
-            "EWG": "ETF que invierte en empresas de Alemania.",
-            "EWA": "ETF que invierte en el mercado australiano.",
-            "AGG": "ETF de bonos del mercado de renta fija de EE.UU."
-        }
+    "AZ QQQ NASDAQ 100", "AZ SPDR S&P 500 ETF TRUST", "AZ SPDR DJIA TRUST",
+    "AZ VANGUARD EMERGING MARKET ETF", "AZ FINANCIAL SELECT SECTOR SPDR",
+    "AZ HEALTH CARE SELECT SECTOR", "AZ DJ US HOME CONSTRUCT", "AZ SILVER TRUST",
+    "AZ MSCI TAIWAN INDEX FD", "AZ MSCI UNITED KINGDOM", "AZ MSCI SOUTH KOREA IND",
+    "AZ MSCI EMU", "AZ MSCI JAPAN INDEX FD", "AZ MSCI CANADA", "AZ MSCI GERMANY INDEX",
+    "AZ MSCI AUSTRALIA INDEX", "AZ BARCLAYS AGGREGATE"
+]
+
+etf_tickers = [
+    "QQQ", "SPY", "DIA", "VWO", "XLF", "XLV", "ITB", "SLV", "EWT",
+    "EWU", "EWY", "EZU", "EWJ", "EWC", "EWG", "EWA", "AGG"
+]
+
+# Diccionario con descripciones de cada ETF
+etf_descripciones = {
+    "QQQ": "ETF de empresas tecnológicas que replican el índice NASDAQ 100.",
+    "SPY": "ETF que replica el índice S&P 500, compuesto por las 500 empresas más grandes de EE.UU.",
+    "DIA": "ETF que sigue el índice Dow Jones Industrial Average.",
+    "VWO": "ETF que invierte en mercados emergentes.",
+    "XLF": "ETF que sigue el sector financiero de Estados Unidos.",
+    "XLV": "ETF que representa el sector de salud de Estados Unidos.",
+    "ITB": "ETF enfocado en el sector de la construcción de viviendas en Estados Unidos.",
+    "SLV": "ETF respaldado por plata física.",
+    "EWT": "ETF que representa el mercado de valores de Taiwán.",
+    "EWU": "ETF que invierte en empresas del Reino Unido.",
+    "EWY": "ETF que invierte en empresas de Corea del Sur.",
+    "EZU": "ETF que sigue el índice MSCI EMU, que representa el mercado europeo.",
+    "EWJ": "ETF que invierte en el mercado japonés.",
+    "EWC": "ETF que representa el mercado canadiense.",
+    "EWG": "ETF que invierte en empresas de Alemania.",
+    "EWA": "ETF que invierte en el mercado australiano.",
+    "AGG": "ETF de bonos del mercado de renta fija de EE.UU."
+}
 
 # Pestaña de "Proyección de Inversión"
 with tab2:
@@ -116,8 +114,8 @@ with tab2:
                     
                 # Calcular y mostrar tasa anual promedio
                 try:
-                    precios_inicio = historical_data[0]
-                    precios_fin = historical_data[-1]
+                    precios_inicio = historical_data.iloc[0]
+                    precios_fin = historical_data.iloc[-1]
                     tasa_anual = ((precios_fin / precios_inicio) ** (1 / anos_proyecto)) - 1
                     st.write(f"**Tasa Anual Promedio de Crecimiento ({etf}):** {tasa_anual * 100:.2f}%")
                 except Exception as e:
@@ -141,6 +139,7 @@ with tab2:
                     ax.set_ylabel("Valor de Inversión ($)")
                     st.pyplot(fig)
 
-        # Botón de ayuda en la barra lateral
-        st.sidebar.header("Ayuda")
-        st.sidebar.write("Para más información, contacta a nuestro número de ayuda: 800-123-4567")
+# Botón de ayuda en la barra lateral
+st.sidebar.header("Ayuda")
+st.sidebar.write("Para más información, contacta a nuestro número de ayuda: 800-123-4567")
+
