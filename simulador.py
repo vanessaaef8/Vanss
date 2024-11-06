@@ -40,25 +40,17 @@ tab1, tab2 = st.tabs(["Datos del Cliente", "Proyección de Inversión"])
 with tab1:
     st.sidebar.title("Simulador OptiMaxx Patrimonial")
     st.sidebar.write("Por favor, ingresa tus datos para continuar.")
-    
-    # Crear campos de entrada para los datos del cliente
     nombre = st.text_input("Nombre")
     apellido_paterno = st.text_input("Apellido Paterno")
     edad = st.number_input("Edad", min_value=18, max_value=150, step=1)
-    
-    # Validación de campos
+
+# Validación de campos
     datos_completos = bool(nombre and apellido_paterno and edad)
 
 # Inicializar opción
 opcion = None
 
-# Pestaña de "Proyección de Inversión"
-with tab2:
-    # Verificar que se hayan completado los datos del cliente
-    if datos_completos:
-        st.title("Proyección de Inversión")
-
-        etf_nombres = [
+etf_nombres = [
             "AZ QQQ NASDAQ 100", "AZ SPDR S&P 500 ETF TRUST", "AZ SPDR DJIA TRUST",
             "AZ VANGUARD EMERGING MARKET ETF", "AZ FINANCIAL SELECT SECTOR SPDR",
             "AZ HEALTH CARE SELECT SECTOR", "AZ DJ US HOME CONSTRUCT", "AZ SILVER TRUST",
@@ -93,115 +85,62 @@ with tab2:
             "AGG": "ETF de bonos del mercado de renta fija de EE.UU."
         }
 
-        # Selección de ETFs
-        etfs_seleccionados = st.multiselect("Selecciona uno o varios ETFs para ver su rendimiento histórico", etf_tickers, 
-                                    format_func=lambda x: etf_nombres[etf_tickers.index(x)])
+# Pestaña de "Proyección de Inversión"
+with tab2:
+    if datos_completos:
+        etfs_seleccionados = st.multiselect(
+            "Selecciona ETFs para ver su rendimiento histórico", etf_tickers,
+            format_func=lambda x: etf_nombres[etf_tickers.index(x)]
+        )  
+        anos_proyecto = st.slider("Selecciona años de datos históricos", 1, 5, 1)
 
-        # Mostrar descripción del ETF seleccionado
-        st.write(f"**Descripción del ETF seleccionado ({etf_nombre_seleccionado}):** {etf_descripciones.get(etf_seleccionado, 'Descripción no disponible.')}")
-        
-        # Rango de tiempo para el rendimiento histórico
-        anos_proyecto = st.slider("Selecciona el número de años de datos históricos", min_value=1, max_value=5, step=1)
-        
-        # Mostrar y graficar datos históricos para cada ETF seleccionado
         if etfs_seleccionados:
             for etf in etfs_seleccionados:
-                st.write(f"### Rendimiento histórico del ETF: {etf_nombres[etf_tickers.index(etf)]} ({etf})")
-        
-        # Obtener los datos históricos del ETF
-        ticker_data = yf.Ticker(etf)
-        historical_data = ticker_data.history(period=f"{anos_proyecto}y")['Close']
-                
-        if not historical_data.empty:
-            # Gráfica de precios de cierre históricos
-            plt.figure(figsize=(10, 6))
-            plt.plot(historical_data.index, historical_data, label=f"{etf_nombres[etf_tickers.index(etf)]}")
-            plt.xlabel("Fecha")
-            plt.ylabel("Precio de Cierre ($)")
-            plt.title(f"Precio Histórico del ETF: {etf_nombres[etf_tickers.index(etf)]}")
-            plt.legend()
-            plt.grid(True)
+                st.write(f"**Descripción del ETF ({etf}):** {etf_descripciones.get(etf, 'Descripción no disponible')}")
+
+                # Obtener y graficar datos históricos
+                ticker_data = yf.Ticker(etf)
+                historical_data = ticker_data.history(period=f"{anos_proyecto}y")['Close']
+
+                if not historical_data.empty:
+                    plt.figure(figsize=(10, 6))
+                    plt.plot(historical_data.index, historical_data, label=f"{etf_nombres[etf_tickers.index(etf)]}")
+                    plt.xlabel("Fecha")
+                    plt.ylabel("Precio de Cierre ($)")
+                    plt.title(f"Precio Histórico del ETF: {etf_nombres[etf_tickers.index(etf)]}")
+                    plt.legend()
+                    st.pyplot(plt.gcf())
+                    plt.clf()
+                else:
+                    st.warning(f"No se encontraron datos históricos para el ETF {etf}.")
                     
-            st.pyplot(plt.gcf())  # Muestra la gráfica en Streamlit
-            plt.clf()  # Limpia la figura para evitar superposición de gráficos en la siguiente iteración
-        else:
-            st.warning(f"No se encontraron datos históricos para el ETF {etf}.")
+                # Calcular y mostrar tasa anual promedio
+                try:
+                    precios_inicio = historical_data[0]
+                    precios_fin = historical_data[-1]
+                    tasa_anual = ((precios_fin / precios_inicio) ** (1 / anos_proyecto)) - 1
+                    st.write(f"**Tasa Anual Promedio de Crecimiento ({etf}):** {tasa_anual * 100:.2f}%")
+                except Exception as e:
+                    st.error(f"No se pudo calcular la tasa de crecimiento para {etf}. Error: {str(e)}")
 
-        def obtener_tasa_anual_promedio(ticker, anos_proyecto):
-            try:
-                datos = yf.Ticker(ticker).history(period=f"{anos_proyecto}y")
-                precios_inicio = datos['Close'][0]
-                precios_fin = datos['Close'][-1]
-                tasa_promedio = ((precios_fin / precios_inicio) ** (1 / anos_proyecto)) - 1
-                return tasa_promedio
-            except Exception as e:
-                st.error(f"No se pudo obtener datos para el ticker {ticker}. Error: {str(e)}")
-                return None
-                
-        tasa_anual = obtener_tasa_anual_promedio(etf_seleccionado, anos_proyecto)
-        
-        # Campo de entrada para el monto de inversión inicial
-        aportacion_inicial = st.number_input("Monto de inversión inicial ($)", min_value=10000, step=1)
-        
-        # Verificamos que la tasa anual sea válida antes de proceder
-        if tasa_anual is not None:
-            # Calculamos el valor final de la inversión
-            valor_final = aportacion_inicial * (1 + tasa_anual) ** anos_proyecto
-            st.write(f"**Valor final de la inversión después de {anos_proyecto} años:** ${valor_final:,.2f}")
-            
-            # Calculamos los valores proyectados basados en el monto inicial
-            años = np.arange(1, anos_proyecto + 1)
-            valores_proyectados = [aportacion_inicial * (1 + tasa_anual) ** i for i in años]
-        
-            # Configuración de la gráfica para mostrar la inversión proyectada
-            plt.style.use('ggplot')
-            fig, ax = plt.subplots(figsize=(10, 6))
-        
-            ax.plot(años, valores_proyectados, color="royalblue", marker="o", markersize=6, label="Proyección de Inversión")
-            ax.set_title(f"Proyección de Crecimiento del ETF: {etf_nombre_seleccionado}", fontsize=16, fontweight="bold")
-            ax.set_xlabel("Años", fontsize=12)
-            ax.set_ylabel("Valor de Inversión ($)", fontsize=12)
-            ax.legend()
-        
-            # Mostrar gráfica en Streamlit
-            st.pyplot(fig)
-        else:
-            st.error("No se pudo obtener la tasa de crecimiento. Verifica el ticker o el periodo seleccionado.")
-        
-        # Opciones de escenarios de tasa de crecimiento anual
-        if tasa_anual is not None:
-            escenario = st.selectbox("Selecciona un escenario", ["Optimista", "Esperado", "Pesimista"])
+                # Proyección de inversión
+                aportacion_inicial = st.number_input("Monto de inversión inicial ($)", min_value=10000, step=1)
+                if tasa_anual is not None:
+                    valor_final = aportacion_inicial * (1 + tasa_anual) ** anos_proyecto
+                    st.write(f"**Valor final de la inversión después de {anos_proyecto} años en {etf}:** ${valor_final:,.2f}")
+                    
+                    años = np.arange(1, anos_proyecto + 1)
+                    valores_proyectados = [aportacion_inicial * (1 + tasa_anual) ** i for i in años]
+                    
+                    # Gráfica de proyección de crecimiento
+                    plt.style.use('ggplot')
+                    fig, ax = plt.subplots(figsize=(10, 6))
+                    ax.plot(años, valores_proyectados, color="royalblue", marker="o", markersize=6)
+                    ax.set_title(f"Proyección de Crecimiento del ETF: {etf_nombres[etf_tickers.index(etf)]}")
+                    ax.set_xlabel("Años")
+                    ax.set_ylabel("Valor de Inversión ($)")
+                    st.pyplot(fig)
 
-            # Definir tasas de crecimiento para cada escenario (valores ejemplo, ajusta según datos reales)
-            if escenario == "Optimista":
-                tasa_anual_ajustada = tasa_anual * 1.2  # 20% más alta
-            elif escenario == "Esperado":
-                tasa_anual_ajustada = tasa_anual
-            else:
-                tasa_anual_ajustada = tasa_anual * 0.8  # 20% más baja
-
-            # Calcular proyecciones en base 100 para cada año
-            años = np.arange(1, anos_proyecto + 1)
-            valores_proyectados_escenario = [100 * (1 + tasa_anual_ajustada) ** i for i in años]
-
-            # Configuración de la gráfica
-            plt.style.use('ggplot')
-            fig, ax = plt.subplots(figsize=(10, 6))
-            
-            # Graficar proyección del escenario seleccionado
-            ax.plot(años, valores_proyectados_escenario, color="black", marker="o", markersize=6, label=f"Escenario {escenario}")
-            ax.axhline(100, color="grey", linestyle="--", linewidth=1, label="Base 100")
-            
-            # Personalizar gráfica
-            ax.set_title(f"Proyección de Crecimiento - Escenario {escenario}", fontsize=16, fontweight="bold")
-            ax.set_xlabel("Años", fontsize=12)
-            ax.set_ylabel("Valor de Inversión (Base 100)", fontsize=12)
-            ax.legend()
-            ax.grid(True)
-
-            # Mostrar gráfica en Streamlit
-            st.pyplot(fig)
-
-            # Botón de ayuda en la barra lateral
-            st.sidebar.header("Ayuda")
-            st.sidebar.write("Para más información, contacta a nuestro número de ayuda: 800-123-4567")
+        # Botón de ayuda en la barra lateral
+        st.sidebar.header("Ayuda")
+        st.sidebar.write("Para más información, contacta a nuestro número de ayuda: 800-123-4567")
