@@ -122,7 +122,12 @@ with tab2:
                     st.error(f"No se pudo calcular la tasa de crecimiento para {etf}. Error: {str(e)}")
 
                 # Proyección de inversión
-                aportacion_inicial = st.number_input("Monto de inversión inicial ($)", min_value=10000, step=1)
+                aportacion_inicial = st.number_input(
+                    f"Monto de inversión inicial ($) para {etf}", 
+                    min_value=10000, 
+                    step=1, 
+                    key=f"aportacion_inicial_{etf}"
+                )
                 if tasa_anual is not None:
                     valor_final = aportacion_inicial * (1 + tasa_anual) ** anos_proyecto
                     st.write(f"**Valor final de la inversión después de {anos_proyecto} años en {etf}:** ${valor_final:,.2f}")
@@ -142,4 +147,5 @@ with tab2:
 # Botón de ayuda en la barra lateral
 st.sidebar.header("Ayuda")
 st.sidebar.write("Para más información, contacta a nuestro número de ayuda: 800-123-4567")
+
 
