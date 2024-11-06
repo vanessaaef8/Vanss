@@ -92,13 +92,40 @@ with tab2:
             "EWA": "ETF que invierte en el mercado australiano.",
             "AGG": "ETF de bonos del mercado de renta fija de EE.UU."
         }
-        
-        etf_seleccionado = st.selectbox("Selecciona un ETF", etf_tickers, format_func=lambda x: etf_nombres[etf_tickers.index(x)])
-        anos_proyecto = st.slider("Número de años a proyectar", min_value=1, max_value=5, step=1)
-        etf_nombre_seleccionado = etf_nombres[etf_tickers.index(etf_seleccionado)]
-        
+
+        # Selección de ETFs
+        etfs_seleccionados = st.multiselect("Selecciona uno o varios ETFs para ver su rendimiento histórico", etf_tickers, 
+                                    format_func=lambda x: etf_nombres[etf_tickers.index(x)])
+
         # Mostrar descripción del ETF seleccionado
         st.write(f"**Descripción del ETF seleccionado ({etf_nombre_seleccionado}):** {etf_descripciones.get(etf_seleccionado, 'Descripción no disponible.')}")
+        
+        # Rango de tiempo para el rendimiento histórico
+        anos_proyecto = st.slider("Selecciona el número de años de datos históricos", min_value=1, max_value=5, step=1)
+        
+        # Mostrar y graficar datos históricos para cada ETF seleccionado
+        if etfs_seleccionados:
+            for etf in etfs_seleccionados:
+                st.write(f"### Rendimiento histórico del ETF: {etf_nombres[etf_tickers.index(etf)]} ({etf})")
+        
+        # Obtener los datos históricos del ETF
+        ticker_data = yf.Ticker(etf)
+        historical_data = ticker_data.history(period=f"{anos_proyecto}y")['Close']
+                
+        if not historical_data.empty:
+            # Gráfica de precios de cierre históricos
+            plt.figure(figsize=(10, 6))
+            plt.plot(historical_data.index, historical_data, label=f"{etf_nombres[etf_tickers.index(etf)]}")
+            plt.xlabel("Fecha")
+            plt.ylabel("Precio de Cierre ($)")
+            plt.title(f"Precio Histórico del ETF: {etf_nombres[etf_tickers.index(etf)]}")
+            plt.legend()
+            plt.grid(True)
+                    
+            st.pyplot(plt.gcf())  # Muestra la gráfica en Streamlit
+            plt.clf()  # Limpia la figura para evitar superposición de gráficos en la siguiente iteración
+        else:
+            st.warning(f"No se encontraron datos históricos para el ETF {etf}.")
 
         def obtener_tasa_anual_promedio(ticker, anos_proyecto):
             try:
