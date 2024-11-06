@@ -93,59 +93,59 @@ with tab2:
         anos_proyecto = st.slider("Selecciona años de datos históricos", 1, 5, 1)
 
         if etfs_seleccionados:
+            tasas_anuas = []
+            nombres_etfs = []
+            aportaciones_iniciales = []
+
+            # Obtener y graficar datos históricos de todos los ETFs seleccionados
             for etf in etfs_seleccionados:
                 st.write(f"**Descripción del ETF ({etf}):** {etf_descripciones.get(etf, 'Descripción no disponible')}")
 
-                # Obtener y graficar datos históricos
+                # Obtener datos históricos
                 ticker_data = yf.Ticker(etf)
                 historical_data = ticker_data.history(period=f"{anos_proyecto}y")['Close']
 
                 if not historical_data.empty:
-                    plt.figure(figsize=(10, 6))
-                    plt.plot(historical_data.index, historical_data, label=f"{etf_nombres[etf_tickers.index(etf)]}")
-                    plt.xlabel("Fecha")
-                    plt.ylabel("Precio de Cierre ($)")
-                    plt.title(f"Precio Histórico del ETF: {etf_nombres[etf_tickers.index(etf)]}")
-                    plt.legend()
-                    st.pyplot(plt.gcf())
-                    plt.clf()
+                    # Calcular tasa anual promedio
+                    try:
+                        precios_inicio = historical_data.iloc[0]
+                        precios_fin = historical_data.iloc[-1]
+                        tasa_anual = ((precios_fin / precios_inicio) ** (1 / anos_proyecto)) - 1
+                        tasas_anuas.append(tasa_anual)
+                        nombres_etfs.append(etf_nombres[etf_tickers.index(etf)])
+                    except Exception as e:
+                        st.error(f"No se pudo calcular la tasa de crecimiento para {etf}. Error: {str(e)}")
+
                 else:
                     st.warning(f"No se encontraron datos históricos para el ETF {etf}.")
-                    
-                # Calcular y mostrar tasa anual promedio
-                try:
-                    precios_inicio = historical_data.iloc[0]
-                    precios_fin = historical_data.iloc[-1]
-                    tasa_anual = ((precios_fin / precios_inicio) ** (1 / anos_proyecto)) - 1
-                    st.write(f"**Tasa Anual Promedio de Crecimiento ({etf}):** {tasa_anual * 100:.2f}%")
-                except Exception as e:
-                    st.error(f"No se pudo calcular la tasa de crecimiento para {etf}. Error: {str(e)}")
+            
+            # Proyección de inversión comparativa
+            aportacion_inicial = st.number_input("Monto de inversión inicial ($)", min_value=10000, step=1)
 
-                # Proyección de inversión
-                aportacion_inicial = st.number_input(
-                    f"Monto de inversión inicial ($) para {etf}", 
-                    min_value=10000, 
-                    step=1, 
-                    key=f"aportacion_inicial_{etf}"
-                )
-                if tasa_anual is not None:
-                    valor_final = aportacion_inicial * (1 + tasa_anual) ** anos_proyecto
-                    st.write(f"**Valor final de la inversión después de {anos_proyecto} años en {etf}:** ${valor_final:,.2f}")
-                    
-                    años = np.arange(1, anos_proyecto + 1)
+            # Mostrar proyección de todos los ETFs seleccionados en una sola gráfica
+            if tasas_anuas:
+                años = np.arange(1, anos_proyecto + 1)
+                plt.style.use('ggplot')
+                fig, ax = plt.subplots(figsize=(10, 6))
+
+                for idx, tasa_anual in enumerate(tasas_anuas):
                     valores_proyectados = [aportacion_inicial * (1 + tasa_anual) ** i for i in años]
-                    
-                    # Gráfica de proyección de crecimiento
-                    plt.style.use('ggplot')
-                    fig, ax = plt.subplots(figsize=(10, 6))
-                    ax.plot(años, valores_proyectados, color="royalblue", marker="o", markersize=6)
-                    ax.set_title(f"Proyección de Crecimiento del ETF: {etf_nombres[etf_tickers.index(etf)]}")
-                    ax.set_xlabel("Años")
-                    ax.set_ylabel("Valor de Inversión ($)")
-                    st.pyplot(fig)
+                    ax.plot(años, valores_proyectados, label=f"{nombres_etfs[idx]} (Tasa: {tasas_anuas[idx]*100:.2f}%)", marker="o", markersize=6)
 
-# Botón de ayuda en la barra lateral
-st.sidebar.header("Ayuda")
-st.sidebar.write("Para más información, contacta a nuestro número de ayuda: 800-123-4567")
+                ax.set_title(f"Proyección de Crecimiento de los ETFs Seleccionados")
+                ax.set_xlabel("Años")
+                ax.set_ylabel("Valor de Inversión ($)")
+                ax.legend()
+                st.pyplot(fig)
+
+                # Calcular el valor final de la inversión para cada ETF seleccionado
+                for idx, tasa_anual in enumerate(tasas_anuas):
+                    valor_final = aportacion_inicial * (1 + tasa_anual) ** anos_proyecto
+                    st.write(f"**Valor final de la inversión para el ETF {nombres_etfs[idx]} después de {anos_proyecto} años:** ${valor_final:,.2f}")
+
+        # Botón de ayuda en la barra lateral
+        st.sidebar.header("Ayuda")
+        st.sidebar.write("Para más información, contacta a nuestro número de ayuda: 800-123-4567")
+
 
 
