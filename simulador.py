@@ -122,6 +122,11 @@ with tab2:
             # Proyección de inversión comparativa
             aportacion_inicial = st.number_input("Monto de inversión inicial ($)", min_value=10000, step=1)
 
+            # Calcular cuál ETF tiene el mayor rendimiento
+            mejor_etf_index = np.argmax(tasas_anuas)
+            mejor_etf = nombres_etfs[mejor_etf_index]
+            mejor_tasa = tasas_anuas[mejor_etf_index]
+            
             # Mostrar proyección de todos los ETFs seleccionados en una sola gráfica
             if tasas_anuas:
                 años = np.arange(1, anos_proyecto + 1)
@@ -138,6 +143,9 @@ with tab2:
                 ax.legend()
                 st.pyplot(fig)
 
+                # Mostrar cuál es el ETF más conveniente
+                st.write(f"El ETF más conveniente es **{mejor_etf}** con una tasa de crecimiento anual de **{mejor_tasa * 100:.2f}%**. Este es el que más rendimiento ha generado en el período seleccionado.")
+                
                 # Calcular el valor final de la inversión para cada ETF seleccionado
                 for idx, tasa_anual in enumerate(tasas_anuas):
                     valor_final = aportacion_inicial * (1 + tasa_anual) ** anos_proyecto
